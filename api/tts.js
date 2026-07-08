@@ -32,13 +32,15 @@ export default async function handler(req, res) {
           "xi-api-key": apiKey,
         },
         body: JSON.stringify({
-          text: text.slice(0, 500), // límite de seguridad
-          model_id: "eleven_multilingual_v2",
+          text: text.slice(0, 800), // límite de seguridad
+          model_id: "eleven_turbo_v2_5",
+          language_code: "es", // fuerza español (evita que "adivine" inglés)
           voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.8,
-            style: 0.4,
+            stability: 0.68,       // más estable = menos altibajos raros
+            similarity_boost: 0.85,
+            style: 0.15,           // menos "dramatismo" = menos pausas artificiales
             use_speaker_boost: true,
+            speed: 1.05,           // ligeramente más fluido
           },
         }),
       }
