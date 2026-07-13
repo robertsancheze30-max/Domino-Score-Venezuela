@@ -32,15 +32,15 @@ export default async function handler(req, res) {
           "xi-api-key": apiKey,
         },
         body: JSON.stringify({
-          text: text.slice(0, 800), // límite de seguridad
+          text: text.slice(0, 2500), // límite de seguridad (subido de 800 a 2500 para que no corte frases combinadas largas)
           model_id: "eleven_turbo_v2_5",
           language_code: "es", // fuerza español (evita que "adivine" inglés)
           voice_settings: {
-            stability: 0.68,       // más estable = menos altibajos raros
+            stability: 0.55,       // un poco más variable = entonación más natural, menos "plano"
             similarity_boost: 0.85,
-            style: 0.15,           // menos "dramatismo" = menos pausas artificiales
+            style: 0.25,           // un poco más de expresividad, sin pasarse
             use_speaker_boost: true,
-            speed: 1.05,           // ligeramente más fluido
+            // quitamos "speed" (podía generar cortes/artefactos raros en algunas frases)
           },
         }),
       }
