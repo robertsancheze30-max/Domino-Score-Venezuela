@@ -1923,10 +1923,8 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
       secuencia.push(fraseRonda);
 
-      const cercaDeMeta = newScores.some((s) => {
-        const restante = meta - s;
-        return restante <= 8 && restante > 0;
-      });
+      const restanteJugadorActual = meta - newScores[i];
+      const cercaDeMeta = restanteJugadorActual <= 8 && restanteJugadorActual > 0;
       if (cercaDeMeta) {
         secuencia.push(roundCycle === 4 ? "Todavía no se van" : "Todavía no se va");
       }
@@ -2984,11 +2982,9 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       ];
       secuencia.push(frasesIndividual[Math.floor(Math.random() * frasesIndividual.length)]);
 
-      // Anunciar una sola vez si algún jugador está a 5 puntos o menos de ganar
-      const cercaDeMeta = newScores.some((s) => {
-        const restante = meta - s;
-        return restante <= 8 && restante > 0;
-      });
+      // Anunciar solo si el jugador que ACABA de sumar quedó a 8 puntos o menos de ganar
+      const restanteJugadorActual = meta - newScores[i];
+      const cercaDeMeta = restanteJugadorActual <= 8 && restanteJugadorActual > 0;
       if (cercaDeMeta) {
         secuencia.push("Todavía no se va");
       }
@@ -3595,7 +3591,7 @@ export default function App() {
     if (!audioUnlocked || welcomeSpokenRef.current) return;
     welcomeSpokenRef.current = true;
     const t = setTimeout(() => {
-      elevenSpeak("¡¡¡Bienvenidos a Dominó Score Venezuela!!!");
+      elevenSpeak("¡Bienvenidos... a Dominó Score Venezuela!");
     }, 1000);
     return () => clearTimeout(t);
   }, [audioUnlocked]);
