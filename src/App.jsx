@@ -835,7 +835,7 @@ function Setup1v1Screen({ onStart, onBack }) {
               placeholder="Salidor con la piedra más alta"
               style={{
                 width:"100%", padding:"13px 16px", background:"transparent", border:"none",
-                fontSize:17, color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:1,
+                fontSize:"clamp(11px, 3.6vw, 17px)", color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:0.5,
                 textAlign:"center", outline:"none",
               }} />
           </ChamferFrame>
@@ -860,7 +860,7 @@ function Setup1v1Screen({ onStart, onBack }) {
             }} placeholder="Nombre del jugador 2"
               style={{
                 width:"100%", padding:"13px 16px", background:"transparent", border:"none",
-                fontSize:17, color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:1,
+                fontSize:"clamp(11px, 3.6vw, 17px)", color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:0.5,
                 textAlign:"center", outline:"none",
               }} />
           </ChamferFrame>
@@ -3542,6 +3542,17 @@ export default function App() {
   const [audioUnlocked, setAudioUnlocked] = useState(false);
 
   useEffect(() => { setLoading(false); }, []);
+
+  // Reset global: elimina el margen por defecto del navegador (causaba franjas blancas en los bordes)
+  useEffect(() => {
+    document.documentElement.style.margin = "0";
+    document.documentElement.style.padding = "0";
+    document.documentElement.style.background = "#000";
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+    document.body.style.background = "#000";
+    document.body.style.overflowX = "hidden";
+  }, []);
 
   // Desbloquear AudioContext e iOS SpeechSynthesis con el primer toque
   useEffect(() => {
