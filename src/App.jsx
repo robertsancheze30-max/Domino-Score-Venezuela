@@ -339,7 +339,7 @@ function SlotNumber({ value, color, fontSize = 64 }) {
 
 const AppTitle = () => null; // replaced inline in SetupScreen
 
-function ModeMenuScreen({ onSelectMode, audioUnlocked, isPro, onUnlockPro }) {
+function ModeMenuScreen({ onSelectMode, audioUnlocked, isPro, onUnlockPro, colorTheme, onChangeColorTheme }) {
   const modes = [
     { id: "equipos", title: "EQUIPOS", spoken: "EQUIPOS", top: "23.8%", height: "12.8%" },
     { id: "1v1", title: "1 VS 1", spoken: "1 contra 1", top: "37.9%", height: "12.1%" },
@@ -361,6 +361,8 @@ function ModeMenuScreen({ onSelectMode, audioUnlocked, isPro, onUnlockPro }) {
     }
   };
 
+  const [showThemeModal, setShowThemeModal] = useState(false);
+
   return (
     <div style={{
       minHeight: "100vh", background: "#000",
@@ -379,19 +381,64 @@ function ModeMenuScreen({ onSelectMode, audioUnlocked, isPro, onUnlockPro }) {
 
         {/* Botón / insignia PRO */}
         <button
-          onClick={() => { if (!isPro) setShowCodeModal(true); }}
+          onClick={() => { if (isPro) setShowThemeModal(true); else setShowCodeModal(true); }}
           style={{
             position: "absolute", top: "8px", left: "8px",
             background: isPro ? "linear-gradient(180deg, #FFEF9F 0%, #FFD700 60%, #B8860B 100%)" : "rgba(0,0,0,0.55)",
             border: isPro ? "none" : "1px solid #FFD70088",
             borderRadius: 999, padding: "5px 12px",
             fontFamily: "'Orbitron', sans-serif", fontWeight: 800, fontSize: 10, letterSpacing: 1,
-            color: isPro ? "#000" : "#FFD700", cursor: isPro ? "default" : "pointer",
+            color: isPro ? "#000" : "#FFD700", cursor: "pointer",
           }}
         >
           {isPro ? "✨ PRO" : "🔓 Tengo un código"}
         </button>
       </div>
+
+      {showThemeModal && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 300,
+          background: "rgba(0,0,0,0.9)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 24,
+        }} onClick={() => setShowThemeModal(false)}>
+          <div onClick={e => e.stopPropagation()} style={{
+            width: "100%", maxWidth: 340, background: "#0a0a0a",
+            border: "1px solid #FFD700", borderRadius: 16, padding: 22,
+            boxShadow: "0 0 24px #FFD70044",
+          }}>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800, fontSize: 15, color: "#FFD700", textAlign: "center", marginBottom: 16 }}>
+              🎨 Elige tu paleta de colores
+            </div>
+            {Object.entries(COLOR_THEMES).map(([key, theme]) => (
+              <button
+                key={key}
+                onClick={() => { onChangeColorTheme(key); setShowThemeModal(false); }}
+                style={{
+                  width: "100%", display: "flex", alignItems: "center", gap: 10,
+                  background: colorTheme === key ? "#1a1a1a" : "transparent",
+                  border: colorTheme === key ? "1px solid #FFD700" : "1px solid #ffffff22",
+                  borderRadius: 10, padding: "10px 12px", marginBottom: 10, cursor: "pointer",
+                }}
+              >
+                <div style={{ display: "flex", gap: 4 }}>
+                  {theme.colors.map((c, i) => (
+                    <div key={i} style={{ width: 16, height: 16, borderRadius: 4, background: c.main }} />
+                  ))}
+                </div>
+                <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: 12, color: "#fff", flex: 1, textAlign: "left" }}>
+                  {theme.label}
+                </span>
+                {colorTheme === key && <span style={{ color: "#FFD700" }}>✓</span>}
+              </button>
+            ))}
+            <button onClick={() => setShowThemeModal(false)} style={{
+              width: "100%", marginTop: 4, background: "transparent", border: "1px solid #ffffff33", borderRadius: 999,
+              padding: "10px 0", color: "#fff", fontFamily: "'Orbitron', sans-serif", fontSize: 12, cursor: "pointer",
+            }}>Cerrar</button>
+          </div>
+        </div>
+      )}
 
       {showCodeModal && (
         <div style={{
@@ -1535,6 +1582,19 @@ const TEAM_COLORS = [
   { main: "#FFD700",    shadow: "#8B7500", bg: "#0a0a0a", accent: "#FFE680" },
 ];
 
+// Paleta PRO "Tropical Caribeño"
+const TEAM_COLORS_TROPICAL = [
+  { main: "#00C2CB", shadow: "#007A80", bg: "#0a0a0a", accent: "#6FEFF3" },
+  { main: "#FF6B35", shadow: "#B34712", bg: "#0a0a0a", accent: "#FFB08A" },
+  { main: "#FF2D78", shadow: "#B0134C", bg: "#0a0a0a", accent: "#FF8FB8" },
+  { main: "#FFC300", shadow: "#B38600", bg: "#0a0a0a", accent: "#FFE066" },
+];
+
+const COLOR_THEMES = {
+  default: { label: "Clásico", colors: TEAM_COLORS },
+  tropical: { label: "Tropical Caribeño", colors: TEAM_COLORS_TROPICAL },
+};
+
 // Halftone dot background
 const HalftonePattern = () => (
   <div style={{
@@ -1738,7 +1798,7 @@ function NumberKeypad({ color, value, label, onDigit, onBackspace, onClear, onCo
   );
 }
 
-function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, roundCycle = 4, players = [], isRevancha = false, revanchaCount = 0, pastWinners = [], onMatchEnd }) {
+function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, roundCycle = 4, players = [], isRevancha = false, revanchaCount = 0, pastWinners = [], onMatchEnd, teamColors = TEAM_COLORS }) {
   const [scores, setScores] = useState(isRevancha ? [99, 99] : (initialState?.scores || [0, 0]));
   const [inputs, setInputs] = useState(["", ""]);
   const [keypadIdx, setKeypadIdx] = useState(null);
@@ -1750,7 +1810,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
     try { return JSON.parse(localStorage.getItem("losmalucos-matches") || "[]"); } catch(e) { return []; }
   });
 
-  const tc = TEAM_COLORS;
+  const tc = teamColors;
   const names = [team1, team2];
 
   // Al entrar a esta pantalla, siempre empezar arriba del todo
@@ -2863,7 +2923,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
   );
 }
 
-function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = false }) {
+function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = false, teamColors = TEAM_COLORS }) {
   const n = playerNames.length;
   const [scores, setScores] = useState(Array(n).fill(isRevancha ? 99 : 0));
   const [inputs, setInputs] = useState(Array(n).fill(""));
@@ -2888,7 +2948,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
     return () => clearTimeout(t);
   }, []);
 
-  const tc = TEAM_COLORS;
+  const tc = teamColors;
   const names = playerNames;
 
   const speak = (text) => {
@@ -3650,6 +3710,14 @@ export default function App() {
     try { localStorage.setItem("losmalucos-pro", "true"); } catch (e) {}
     setIsPro(true);
   };
+  const [colorTheme, setColorTheme] = useState(() => {
+    try { return localStorage.getItem("losmalucos-theme") || "default"; } catch (e) { return "default"; }
+  });
+  const changeColorTheme = (key) => {
+    try { localStorage.setItem("losmalucos-theme", key); } catch (e) {}
+    setColorTheme(key);
+  };
+  const activeTeamColors = (isPro ? COLOR_THEMES[colorTheme]?.colors : null) || TEAM_COLORS;
 
   useEffect(() => { setLoading(false); }, []);
 
@@ -3725,7 +3793,7 @@ export default function App() {
 
   if (showWelcome) return <WelcomeScreen onContinue={() => setShowWelcome(false)} />;
 
-  if (!mode) return <ModeMenuScreen onSelectMode={(m) => setMode(m)} audioUnlocked={audioUnlocked} isPro={isPro} onUnlockPro={unlockPro} />;
+  if (!mode) return <ModeMenuScreen onSelectMode={(m) => setMode(m)} audioUnlocked={audioUnlocked} isPro={isPro} onUnlockPro={unlockPro} colorTheme={colorTheme} onChangeColorTheme={changeColorTheme} />;
 
   if (mode === "equipos") {
     if (!game) return <SetupScreen onStart={(t1, t2, meta, players) => { setMatchStreak({ revanchaCount: 0, winners: [] }); setGame({ t1, t2, meta, players, resume: null }); }} onBack={() => setMode(null)} />;
@@ -3733,6 +3801,7 @@ export default function App() {
       <GameScreen
         team1={game.t1} team2={game.t2} meta={game.meta}
         initialState={game.resume}
+        teamColors={activeTeamColors}
         players={game.players || ["Jugador 1", "Jugador 2", "Jugador 3", "Jugador 4"]}
         revanchaCount={matchStreak.revanchaCount}
         pastWinners={matchStreak.winners}
@@ -3750,6 +3819,7 @@ export default function App() {
         key={revanchaKey}
         team1={game.t1} team2={game.t2} meta={game.meta}
         initialState={game.resume}
+        teamColors={activeTeamColors}
         roundCycle={2}
         players={game.players || [game.t1, game.t2]}
         isRevancha={game.isRevancha || false}
@@ -3770,6 +3840,7 @@ export default function App() {
       <GameMultiScreen
         key={revanchaKey}
         playerNames={savedNames3} meta={savedMeta3}
+        teamColors={activeTeamColors}
         isRevancha={game.revancha || false}
         onReset={() => { setGame(null); setMode(null); }}
         onRevanche={() => { setRevanchaKey(k => k + 1); setGame({ names: savedNames3, meta: savedMeta3, revancha: true }); }}
@@ -3785,6 +3856,7 @@ export default function App() {
       <GameMultiScreen
         key={revanchaKey}
         playerNames={savedNames4} meta={savedMeta4}
+        teamColors={activeTeamColors}
         isRevancha={game.revancha || false}
         onReset={() => { setGame(null); setMode(null); }}
         onRevanche={() => { setRevanchaKey(k => k + 1); setGame({ names: savedNames4, meta: savedMeta4, revancha: true }); }}
@@ -3792,5 +3864,5 @@ export default function App() {
     );
   }
 
-  return <ModeMenuScreen onSelectMode={(m) => setMode(m)} audioUnlocked={audioUnlocked} isPro={isPro} onUnlockPro={unlockPro} />;
+  return <ModeMenuScreen onSelectMode={(m) => setMode(m)} audioUnlocked={audioUnlocked} isPro={isPro} onUnlockPro={unlockPro} colorTheme={colorTheme} onChangeColorTheme={changeColorTheme} />;
 }
