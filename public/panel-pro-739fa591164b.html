@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Generador de códigos PRO — Dominó Score Venezuela</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: #000;
+    font-family: 'Courier New', monospace;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    width: 100%; max-width: 420px; background: #0a0a0a;
+    border: 1px solid #FFD700; border-radius: 16px; padding: 24px;
+    box-shadow: 0 0 24px rgba(255,215,0,0.25);
+  }
+  h1 { color: #FFD700; font-size: 16px; text-align: center; margin: 0 0 4px; letter-spacing: 1px; }
+  p.sub { color: #999; font-size: 11px; text-align: center; margin: 0 0 20px; }
+  button {
+    width: 100%; padding: 12px; border-radius: 999px; border: none;
+    background: linear-gradient(180deg, #FFEF9F 0%, #FFD700 60%, #B8860B 100%);
+    color: #000; font-weight: 800; font-size: 13px; cursor: pointer;
+    font-family: inherit; letter-spacing: 1px;
+  }
+  .result {
+    margin-top: 18px; padding: 16px; background: #000;
+    border: 1px solid #FFD70055; border-radius: 10px;
+    text-align: center;
+  }
+  .code {
+    font-size: 22px; color: #7CFF8F; letter-spacing: 2px; font-weight: bold;
+    word-break: break-all;
+  }
+  .hint { color: #666; font-size: 10px; text-align: center; margin-top: 14px; line-height: 1.5; }
+  .history { margin-top: 16px; max-height: 200px; overflow-y: auto; }
+  .history-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 10px; background: #111; border-radius: 6px; margin-bottom: 6px;
+    font-size: 12px; color: #ccc;
+  }
+  .copy-btn {
+    background: none; border: 1px solid #FFD70066; color: #FFD700;
+    padding: 3px 8px; font-size: 10px; border-radius: 6px; width: auto;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔓 GENERADOR DE CÓDIGOS PRO</h1>
+    <p class="sub">Dominó Score Venezuela — uso privado, no compartir esta página</p>
+    <button onclick="generarCodigo()">Generar código nuevo</button>
+    <div id="resultado"></div>
+    <div id="historial" class="history"></div>
+    <div class="hint">
+      Cada código es único y solo funciona una vez que lo escribas.<br/>
+      Este archivo usa la misma fórmula que la app para validar, así que cualquier código que salga aquí funcionará en Dominó Score Venezuela.<br/>
+      Guarda este HTML en un lugar seguro tuyo — no lo subas a GitHub ni lo compartas con nadie.
+    </div>
+  </div>
+
+<script>
+  // MISMA fórmula usada en App.jsx (isValidProCode) — no cambiar sin actualizar ambos lados.
+  const SALT = "malucosVE2026";
+
+  function checksumFor(body) {
+    let sum = 0;
+    for (let i = 0; i < body.length; i++) sum += body.charCodeAt(i) * (i + 1);
+    for (let i = 0; i < SALT.length; i++) sum += SALT.charCodeAt(i);
+    return (sum % 36).toString(36).toUpperCase();
+  }
+
+  function randomBody(len) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let out = "";
+    for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    return out;
+  }
+
+  let historial = [];
+
+  function generarCodigo() {
+    const body = randomBody(7);
+    const check = checksumFor(body);
+    const codigo = "DSV-" + body + check;
+
+    document.getElementById("resultado").innerHTML = `
+      <div class="result">
+        <div class="code">${codigo}</div>
+      </div>
+    `;
+
+    historial.unshift(codigo);
+    if (historial.length > 15) historial.pop();
+    renderHistorial();
+  }
+
+  function renderHistorial() {
+    const el = document.getElementById("historial");
+    el.innerHTML = historial.map(c => `
+      <div class="history-item">
+        <span>${c}</span>
+        <button class="copy-btn" onclick="copiar('${c}')">Copiar</button>
+      </div>
+    `).join("");
+  }
+
+  function copiar(codigo) {
+    navigator.clipboard.writeText(codigo).then(() => {
+      alert("Copiado: " + codigo);
+    }).catch(() => {
+      prompt("Copia este código:", codigo);
+    });
+  }
+</script>
+</body>
+</html>
