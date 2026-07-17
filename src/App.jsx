@@ -663,6 +663,7 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
             <input value={p1} onChange={e => { setP1(capName(e.target.value)); playKey(); }}
               placeholder="Salidor con la cochina"
               className="salidor-input"
+              autoCorrect="off" autoCapitalize="off" autoComplete="off" spellCheck="false"
               style={{
                 width:"100%", padding:"13px 16px", background:"transparent", border:"none",
                 color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:1,
@@ -672,6 +673,7 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
           <ChamferFrame color="#E8000D" rounded delay={2}>
             <input value={p3} onChange={e => { setP3(capName(e.target.value)); playKey(); }}
               placeholder="Jugador 3"
+              autoCorrect="off" autoCapitalize="off" autoComplete="off" spellCheck="false"
               style={{
                 width:"100%", padding:"13px 16px", background:"transparent", border:"none",
                 color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:1,
@@ -697,6 +699,7 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
                 speakSetup((p1 || "Equipo A") + " salió con la cochina");
               }
             }} placeholder="Jugador 2"
+              autoCorrect="off" autoCapitalize="off" autoComplete="off" spellCheck="false"
               style={{
                 width:"100%", padding:"13px 16px", background:"transparent", border:"none",
                 color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:1,
@@ -706,6 +709,7 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
           <ChamferFrame color="#0057D9" rounded delay={3}>
             <input value={p4} onChange={e => { setP4(capName(e.target.value)); playKey(); }}
               placeholder="Jugador 4"
+              autoCorrect="off" autoCapitalize="off" autoComplete="off" spellCheck="false"
               style={{
                 width:"100%", padding:"13px 16px", background:"transparent", border:"none",
                 color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:1,
@@ -972,6 +976,7 @@ function Setup1v1Screen({ onStart, onBack, isPro, colorTheme }) {
           <ChamferFrame color="#E8000D" rounded delay={0}>
             <input value={p1} onChange={e => { setP1(capName(e.target.value)); playKey(); }}
               placeholder="Salidor con la piedra más alta"
+              autoCorrect="off" autoCapitalize="off" autoComplete="off" spellCheck="false"
               style={{
                 width:"100%", padding:"13px 16px", background:"transparent", border:"none",
                 fontSize:"clamp(16px, 3.6vw, 17px)", color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:0.5,
@@ -997,6 +1002,7 @@ function Setup1v1Screen({ onStart, onBack, isPro, colorTheme }) {
                 speakSetup((p1 || "Jugador 1") + " salió con la cochina");
               }
             }} placeholder="Nombre del jugador 2"
+              autoCorrect="off" autoCapitalize="off" autoComplete="off" spellCheck="false"
               style={{
                 width:"100%", padding:"13px 16px", background:"transparent", border:"none",
                 fontSize:"clamp(16px, 3.6vw, 17px)", color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:0.5,
@@ -1248,6 +1254,7 @@ function Setup3pScreen({ onStart, onBack, isPro, colorTheme }) {
             <ChamferFrame color={playerColors[idx]} rounded delay={idx}>
               <input value={val} onChange={e => updatePlayer(idx, e.target.value)}
                 placeholder={idx === 0 ? "Salidor con la piedra más alta" : `Nombre del jugador ${idx + 1}`}
+                autoCorrect="off" autoCapitalize="off" autoComplete="off" spellCheck="false"
                 style={{
                   width:"100%", padding:"13px 16px", background:"transparent", border:"none",
                   fontSize:17, color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:1,
@@ -1511,6 +1518,7 @@ function Setup4pScreen({ onStart, onBack, isPro, colorTheme }) {
                 }
               }}
                 placeholder={idx === 0 ? "Salidor con la cochina" : `Nombre del jugador ${idx + 1}`}
+                autoCorrect="off" autoCapitalize="off" autoComplete="off" spellCheck="false"
                 style={{
                   width:"100%", padding:"13px 16px", background:"transparent", border:"none",
                   fontSize:17, color:"#fff", fontFamily:"'Orbitron', sans-serif", letterSpacing:1,
@@ -1975,6 +1983,7 @@ function CartoonSetupScreen({ title, fields, meta, setMeta, onJugar, onBack, pla
               value={f.value}
               onChange={e => { f.onChange(e.target.value); playKey(); }}
               placeholder={f.placeholder}
+              autoCorrect="off" autoCapitalize="off" autoComplete="off" spellCheck="false"
               style={{
                 width: "100%", boxSizing: "border-box", background: SOFT.card, border: "none", borderRadius: 999,
                 padding: "14px 18px", fontSize: 15, fontWeight: 700, color: SOFT.navy, textAlign: "center",
@@ -2383,6 +2392,16 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const loser = newWinner === 0 ? 1 : 0;
       setLoserScore(newScores[loser]);
       setShowConfetti(true);
+      // Pareja de jugadores (no el nombre de equipo) para rastrear derrotas
+      // sin importar en qué equipo (1 o 2) hayan quedado registrados
+      const pairKey = (a, b) => [a, b].map(s => (s || "").trim().toLowerCase()).sort().join("__");
+      const team1Players = [players[0] || "Jugador 1", players[2] || "Jugador 3"];
+      const team2Players = [players[1] || "Jugador 2", players[3] || "Jugador 4"];
+      const loserPlayers = loser === 0 ? team1Players : team2Players;
+      const loserPairKey = pairKey(loserPlayers[0], loserPlayers[1]);
+      const winnerPlayers = newWinner === 0 ? team1Players : team2Players;
+      const winnerPairKey = pairKey(winnerPlayers[0], winnerPlayers[1]);
+
       // Guardar partida en historial
       const newMatch = {
         date: new Date().toLocaleDateString("es-VE"),
@@ -2391,17 +2410,36 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         winScore: newScores[newWinner],
         loseScore: newScores[loser],
         zapato: newScores[loser] === 0,
+        loserPairKey,
+        winnerPairKey,
       };
       const updated = [...matchHistory, newMatch];
       setMatchHistory(updated);
       try { localStorage.setItem("losmalucos-matches", JSON.stringify(updated)); } catch(e) {}
 
-      // Memoria: en modo 2v2, si este equipo (mismo nombre) ya perdió 2 o más
-      // veces en total (no necesariamente consecutivas), suelta la frase especial
-      const loserLossCount = roundCycle === 4 ? updated.filter(m => m.loser === names[loser]).length : 0;
+      // Memoria: en modo 2v2, si esta misma pareja de jugadores (en cualquiera de
+      // los dos equipos) ya perdió 2 o más veces en total (no necesariamente
+      // consecutivas), suelta la frase especial
+      const loserLossCount = roundCycle === 4 ? updated.filter(m => m.loserPairKey === loserPairKey).length : 0;
       const esSegundaDerrota = loserLossCount >= 2;
       const numeroEnPalabras = { 2: "dos", 3: "tres", 4: "cuatro", 5: "cinco", 6: "seis", 7: "siete", 8: "ocho", 9: "nueve", 10: "diez" };
       const fraseDerrotas = `${names[loser]} ya llevan ${numeroEnPalabras[loserLossCount] || loserLossCount} partidas perdidas, son unos málos!`;
+
+      // Memoria: en modo 2v2, racha de victorias CONSECUTIVAS de esta misma pareja
+      // (en cualquiera de los dos equipos). Se corta si esa pareja pierde una partida.
+      let fraseRachaGanadora = null;
+      if (roundCycle === 4) {
+        const pairMatches = updated.filter(m => m.winnerPairKey === winnerPairKey || m.loserPairKey === winnerPairKey);
+        let winStreak = 0;
+        for (let k = pairMatches.length - 1; k >= 0; k--) {
+          if (pairMatches[k].winnerPairKey === winnerPairKey) winStreak++;
+          else break;
+        }
+        if (winStreak === 2) fraseRachaGanadora = "Estos panas vienen con todo, ya tienen 2 partidas ganadas";
+        else if (winStreak === 3) fraseRachaGanadora = "Estos muchachos están imparables, ya han ganado 3 partidas";
+        else if (winStreak === 4) fraseRachaGanadora = "A estos chamos no hay quien los pare, ya llevan 4 ganadas";
+        else if (winStreak === 5) fraseRachaGanadora = "No hay 5to malo, llevan 5 ganadas, prácticamente están jugando sólos";
+      }
 
       // "¡Coño por fin ganaron/ganó una!" — solo tras 2+ revanchas, si el ganador
       // no había ganado ninguna partida anterior de esta racha
@@ -2411,6 +2449,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       if (newScores[loser] === 0) {
         playSound("zapato");
         const secuenciaZapato = [];
+        if (fraseRachaGanadora) secuenciaZapato.push(fraseRachaGanadora);
         if (esPrimeraVezQueGana) secuenciaZapato.push(roundCycle === 4 ? "Coño, por fin ganaron una!" : "Coño, por fin ganó una!");
         secuenciaZapato.push(frasesZapato(names[newWinner], names[loser], roundCycle === 4));
         if (esSegundaDerrota) secuenciaZapato.push(fraseDerrotas);
@@ -2418,6 +2457,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       } else {
         playSound("win");
         const secuenciaGanador = [];
+        if (fraseRachaGanadora) secuenciaGanador.push(fraseRachaGanadora);
         if (esPrimeraVezQueGana) secuenciaGanador.push(roundCycle === 4 ? "Coño, por fin ganaron una!" : "Coño, por fin ganó una!");
         secuenciaGanador.push(frasesGanador(names[newWinner], newScores[newWinner], roundCycle === 4));
         secuenciaGanador.push(frasesPerdedor(names[loser], roundCycle === 4));
@@ -2838,7 +2878,8 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           }}>
             <div style={{ fontSize: "9vw", animation: "bounce 0.6s ease infinite" }}>🏆</div>
             <div style={{ fontFamily:"'Cinzel', serif", fontWeight:900, fontSize: "4.4vw", color: "#FFD700", letterSpacing:1, animation:"neonText 2.2s ease-in-out infinite", textTransform: "uppercase" }}>
-              {names[winner]} {roundCycle === 4 ? "GANARON" : "GANÓ"}
+              <div>{names[winner]}</div>
+              <div>{roundCycle === 4 ? "GANARON" : "GANÓ"}</div>
             </div>
             <div style={{ fontFamily:"'Orbitron', sans-serif", fontWeight:700, fontSize:"4.2vw", color: "#fff", letterSpacing:2 }}>
               {scores[winner]} PUNTOS
@@ -3739,7 +3780,8 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           }}>
             <div style={{ fontSize: "9vw", animation: "bounce 0.6s ease infinite" }}>🏆</div>
             <div style={{ fontFamily:"'Cinzel', serif", fontWeight:900, fontSize: "4.4vw", color: "#FFD700", letterSpacing:1, animation:"neonText 2.2s ease-in-out infinite", textTransform: "uppercase" }}>
-              {names[winner]} GANÓ
+              <div>{names[winner]}</div>
+              <div>GANÓ</div>
             </div>
             <div style={{ fontFamily:"'Orbitron', sans-serif", fontWeight:700, fontSize:"4.2vw", color: "#fff", letterSpacing:2 }}>
               {scores[winner]} PUNTOS
