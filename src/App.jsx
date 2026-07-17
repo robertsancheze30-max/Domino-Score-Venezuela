@@ -2488,9 +2488,15 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       secuencia.push(fraseRonda);
 
       const restanteJugadorActual = meta - newScores[i];
-      const cercaDeMeta = restanteJugadorActual <= 8 && restanteJugadorActual > 0;
-      if (cercaDeMeta) {
-        secuencia.push(roundCycle === 4 ? "Todavía no se van" : "Todavía no se va");
+      const plural2v2 = roundCycle === 4;
+      if (restanteJugadorActual >= 4 && restanteJugadorActual <= 8) {
+        secuencia.push(plural2v2 ? "Todavía no se van" : "Todavía no se va");
+      } else if (restanteJugadorActual === 3) {
+        secuencia.push(plural2v2 ? "Que cagada, les faltaron 3 puntos para ganar" : "Que cagada, te faltaron 3 puntos para ganar");
+      } else if (restanteJugadorActual === 2) {
+        secuencia.push(plural2v2 ? "Que cagada, les faltaron 2 puntos para ganar" : "Que cagada, te faltaron 2 puntos para ganar");
+      } else if (restanteJugadorActual === 1) {
+        secuencia.push(plural2v2 ? "Que cagada, les faltó un pelo e' culo para ganar" : "Que cagada, te faltó un pelo e' culo para ganar");
       }
 
       const umbralCercaDeMeta = meta / 5; // 50->10, 75->15, 100->20
