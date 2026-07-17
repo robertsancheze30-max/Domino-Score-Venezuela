@@ -457,7 +457,7 @@ function ChamferFrame({ color, children, style, size = 16, rounded = false, dela
           animation: "pulseGlowFrame 2.4s ease-in-out infinite",
         }} />
       )}
-      <div className={`frame-glow frame-pulse shimmer-d${delay}`} style={{
+      <div className={`frame-glow shimmer-d${delay}`} style={{
         position: "relative", zIndex: 1, overflow: "hidden",
         ...shape, background: color, padding: framePad,
         "--glow": color,
@@ -606,7 +606,7 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
         }
         .frame-pulse { animation: framePulseShadow 2s ease-in-out infinite; }
         @keyframes shimmerFrame { 0%{ background-position: 250% 250% } 11.5%{ background-position: -50% -50% } 100%{ background-position: -50% -50% } }
-        .frame-glow { position: relative; animation: pulseGlowFrame 2.4s ease-in-out infinite; }
+        .frame-glow { position: relative; }
         .frame-glow::before {
           content: ""; position: absolute; inset: 0;
           background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
@@ -899,7 +899,7 @@ function Setup1v1Screen({ onStart, onBack, isPro, colorTheme }) {
         }
         .frame-pulse { animation: framePulseShadow 2s ease-in-out infinite; }
         @keyframes shimmerFrame { 0%{ background-position: 250% 250% } 16.7%{ background-position: -50% -50% } 100%{ background-position: -50% -50% } }
-        .frame-glow { position: relative; animation: pulseGlowFrame 2.4s ease-in-out infinite; }
+        .frame-glow { position: relative; }
         .frame-glow::before {
           content: ""; position: absolute; inset: 0;
           background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
@@ -930,24 +930,6 @@ function Setup1v1Screen({ onStart, onBack, isPro, colorTheme }) {
         position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
         backgroundImage: "repeating-linear-gradient(0deg, #FFD70010 0px, transparent 1px, transparent 39px, #FFD70010 40px), repeating-linear-gradient(90deg, #FFD70010 0px, transparent 1px, transparent 39px, #FFD70010 40px)",
       }} />
-
-      {/* Fichas de casino flotantes */}
-      {[
-        { left:"6%", top:"10%", size:46, delay:0, dur:4.2, color:"#FFD700" },
-        { right:"5%", top:"16%", size:34, delay:1.2, dur:3.6, color:"#E8000D" },
-        { left:"4%", top:"42%", size:30, delay:0.6, dur:4.8, color:"#0057D9" },
-        { right:"7%", top:"48%", size:40, delay:1.8, dur:3.9, color:"#FFD700" },
-        { left:"10%", top:"72%", size:28, delay:0.3, dur:4.4, color:"#E8000D" },
-        { right:"9%", top:"78%", size:36, delay:1.5, dur:4.0, color:"#0057D9" },
-      ].map((c, i) => (
-        <div key={i} style={{
-          position:"fixed", left:c.left, right:c.right, top:c.top,
-          width:c.size, height:c.size, borderRadius:"50%",
-          border:`2px dashed ${c.color}`, opacity:0.25,
-          pointerEvents:"none", zIndex:0,
-          animation: `chipFloat ${c.dur}s ${c.delay}s ease-in-out infinite, chipSpin ${c.dur*3}s linear infinite`,
-        }} />
-      ))}
 
       <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 420 }}>
 
@@ -1175,7 +1157,7 @@ function Setup3pScreen({ onStart, onBack, isPro, colorTheme }) {
         }
         .frame-pulse { animation: framePulseShadow 2s ease-in-out infinite; }
         @keyframes shimmerFrame { 0%{ background-position: 250% 250% } 13.6%{ background-position: -50% -50% } 100%{ background-position: -50% -50% } }
-        .frame-glow { position: relative; animation: pulseGlowFrame 2.4s ease-in-out infinite; }
+        .frame-glow { position: relative; }
         .frame-glow::before {
           content: ""; position: absolute; inset: 0;
           background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
@@ -1207,24 +1189,6 @@ function Setup3pScreen({ onStart, onBack, isPro, colorTheme }) {
         position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
         backgroundImage: "repeating-linear-gradient(0deg, #FFD70010 0px, transparent 1px, transparent 39px, #FFD70010 40px), repeating-linear-gradient(90deg, #FFD70010 0px, transparent 1px, transparent 39px, #FFD70010 40px)",
       }} />
-
-      {/* Fichas de casino flotantes */}
-      {[
-        { left:"6%", top:"10%", size:46, delay:0, dur:4.2, color:"#FFD700" },
-        { right:"5%", top:"16%", size:34, delay:1.2, dur:3.6, color:"#E8000D" },
-        { left:"4%", top:"42%", size:30, delay:0.6, dur:4.8, color:"#0057D9" },
-        { right:"7%", top:"48%", size:40, delay:1.8, dur:3.9, color:"#FFD700" },
-        { left:"10%", top:"72%", size:28, delay:0.3, dur:4.4, color:"#E8000D" },
-        { right:"9%", top:"78%", size:36, delay:1.5, dur:4.0, color:"#0057D9" },
-      ].map((c, i) => (
-        <div key={i} style={{
-          position:"fixed", left:c.left, right:c.right, top:c.top,
-          width:c.size, height:c.size, borderRadius:"50%",
-          border:`2px dashed ${c.color}`, opacity:0.25,
-          pointerEvents:"none", zIndex:0,
-          animation: `chipFloat ${c.dur}s ${c.delay}s ease-in-out infinite, chipSpin ${c.dur*3}s linear infinite`,
-        }} />
-      ))}
 
       <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 420 }}>
 
@@ -1432,7 +1396,7 @@ function Setup4pScreen({ onStart, onBack, isPro, colorTheme }) {
         }
         .frame-pulse { animation: framePulseShadow 2s ease-in-out infinite; }
         @keyframes shimmerFrame { 0%{ background-position: 250% 250% } 11.5%{ background-position: -50% -50% } 100%{ background-position: -50% -50% } }
-        .frame-glow { position: relative; animation: pulseGlowFrame 2.4s ease-in-out infinite; }
+        .frame-glow { position: relative; }
         .frame-glow::before {
           content: ""; position: absolute; inset: 0;
           background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,0.55) 50%, transparent 65%);
@@ -1465,24 +1429,6 @@ function Setup4pScreen({ onStart, onBack, isPro, colorTheme }) {
         position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
         backgroundImage: "repeating-linear-gradient(0deg, #FFD70010 0px, transparent 1px, transparent 39px, #FFD70010 40px), repeating-linear-gradient(90deg, #FFD70010 0px, transparent 1px, transparent 39px, #FFD70010 40px)",
       }} />
-
-      {/* Fichas de casino flotantes */}
-      {[
-        { left:"6%", top:"10%", size:46, delay:0, dur:4.2, color:"#FFD700" },
-        { right:"5%", top:"16%", size:34, delay:1.2, dur:3.6, color:"#E8000D" },
-        { left:"4%", top:"42%", size:30, delay:0.6, dur:4.8, color:"#0057D9" },
-        { right:"7%", top:"48%", size:40, delay:1.8, dur:3.9, color:"#FFD700" },
-        { left:"10%", top:"72%", size:28, delay:0.3, dur:4.4, color:"#E8000D" },
-        { right:"9%", top:"78%", size:36, delay:1.5, dur:4.0, color:"#0057D9" },
-      ].map((c, i) => (
-        <div key={i} style={{
-          position:"fixed", left:c.left, right:c.right, top:c.top,
-          width:c.size, height:c.size, borderRadius:"50%",
-          border:`2px dashed ${c.color}`, opacity:0.25,
-          pointerEvents:"none", zIndex:0,
-          animation: `chipFloat ${c.dur}s ${c.delay}s ease-in-out infinite, chipSpin ${c.dur*3}s linear infinite`,
-        }} />
-      ))}
 
       <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: 420 }}>
 
@@ -2717,22 +2663,6 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         backgroundImage: "repeating-linear-gradient(0deg, #FFD70010 0px, transparent 1px, transparent 39px, #FFD70010 40px), repeating-linear-gradient(90deg, #FFD70010 0px, transparent 1px, transparent 39px, #FFD70010 40px)",
       }} />
 
-      {/* Fichas de casino flotantes */}
-      {[
-        { left:"6%", top:"8%", size:40, delay:0, dur:4.2, color:"#FFD700" },
-        { right:"5%", top:"14%", size:30, delay:1.2, dur:3.6, color:"#E8000D" },
-        { left:"4%", top:"60%", size:26, delay:0.6, dur:4.8, color:"#0057D9" },
-        { right:"7%", top:"66%", size:34, delay:1.8, dur:3.9, color:"#FFD700" },
-      ].map((c, i) => (
-        <div key={i} style={{
-          position:"fixed", left:c.left, right:c.right, top:c.top,
-          width:c.size, height:c.size, borderRadius:"50%",
-          border:`2px dashed ${c.color}`, opacity:0.2,
-          pointerEvents:"none", zIndex:0,
-          animation: `chipFloat ${c.dur}s ${c.delay}s ease-in-out infinite, chipSpin ${c.dur*3}s linear infinite`,
-        }} />
-      ))}
-
       {showConfetti && <Confetti />}
 
       {/* ── HEADER ─────────────────────────────── */}
@@ -2980,15 +2910,6 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
               backgroundSize: "16px 16px",
               maskImage: "radial-gradient(ellipse at 50% 0%, #000 0%, transparent 65%)",
               WebkitMaskImage: "radial-gradient(ellipse at 50% 0%, #000 0%, transparent 65%)",
-              animation: `circuitPulse ${3 + i * 0.4}s ease-in-out infinite`,
-            }} />
-            {/* Barrido de brillo cromado */}
-            <div style={{
-              position: "absolute", inset: 0, pointerEvents: "none",
-              backgroundImage: `linear-gradient(100deg, transparent 30%, ${tc[i].main}33 48%, ${tc[i].main}88 50%, ${tc[i].main}33 52%, transparent 70%)`,
-              backgroundSize: "250% 100%",
-              animation: `casinoShimmer ${7 + i * 1.2}s linear infinite`,
-              mixBlendMode: "screen",
             }} />
             {/* Reflejo de cristal superior */}
             <div style={{
@@ -3006,17 +2927,15 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
                 opacity: 0.85, pointerEvents: "none",
               }} />
             ))}
-            {/* Cluster de LEDs parpadeantes */}
+            {/* Cluster de LEDs */}
             <div style={{ position: "absolute", top: 5, right: 6, display: "flex", gap: 3, pointerEvents: "none" }}>
               <div style={{
                 width: 5, height: 5, borderRadius: "50%",
                 background: tc[i].main, boxShadow: `0 0 6px ${tc[i].main}, 0 0 10px ${tc[i].main}`,
-                animation: `ledBlink ${1.4 + i * 0.4}s ease-in-out infinite`,
               }} />
               <div style={{
                 width: 5, height: 5, borderRadius: "50%",
                 background: "#fff", boxShadow: `0 0 6px #fff, 0 0 10px ${tc[i].main}`,
-                animation: `ledBlink2 ${1.1 + i * 0.3}s ease-in-out infinite`,
               }} />
             </div>
             {/* Team name tag */}
@@ -3876,15 +3795,6 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
                 backgroundSize: "16px 16px",
                 maskImage: "radial-gradient(ellipse at 50% 0%, #000 0%, transparent 65%)",
                 WebkitMaskImage: "radial-gradient(ellipse at 50% 0%, #000 0%, transparent 65%)",
-                animation: `circuitPulse ${3 + (i % 2) * 0.4}s ease-in-out infinite`,
-              }} />
-              {/* Barrido de brillo cromado */}
-              <div style={{
-                position: "absolute", inset: 0, pointerEvents: "none",
-                backgroundImage: `linear-gradient(100deg, transparent 30%, ${color}33 48%, ${color}88 50%, ${color}33 52%, transparent 70%)`,
-                backgroundSize: "250% 100%",
-                animation: `casinoShimmer ${7 + (i % 2) * 1.2}s linear infinite`,
-                mixBlendMode: "screen",
               }} />
               {/* Reflejo de cristal superior */}
               <div style={{
@@ -3902,17 +3812,15 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
                   opacity: 0.85, pointerEvents: "none",
                 }} />
               ))}
-              {/* Cluster de LEDs parpadeantes */}
+              {/* Cluster de LEDs */}
               <div style={{ position: "absolute", top: 4, right: 5, display: "flex", gap: 3, pointerEvents: "none" }}>
                 <div style={{
                   width: 4, height: 4, borderRadius: "50%",
                   background: color, boxShadow: `0 0 6px ${color}, 0 0 10px ${color}`,
-                  animation: `ledBlink ${1.4 + (i % 2) * 0.4}s ease-in-out infinite`,
                 }} />
                 <div style={{
                   width: 4, height: 4, borderRadius: "50%",
                   background: "#fff", boxShadow: `0 0 6px #fff, 0 0 10px ${color}`,
-                  animation: `ledBlink2 ${1.1 + (i % 2) * 0.3}s ease-in-out infinite`,
                 }} />
               </div>
               <div style={{
