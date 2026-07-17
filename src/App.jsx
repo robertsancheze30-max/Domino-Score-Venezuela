@@ -2438,7 +2438,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         if (winStreak === 2) fraseRachaGanadora = "Estos panas vienen con todo, ya tienen 2 partidas ganadas";
         else if (winStreak === 3) fraseRachaGanadora = "Estos muchachos están imparables, ya han ganado 3 partidas";
         else if (winStreak === 4) fraseRachaGanadora = "A estos chamos no hay quien los pare, ya llevan 4 ganadas";
-        else if (winStreak === 5) fraseRachaGanadora = "No hay 5to malo, llevan 5 ganadas, prácticamente están jugando sólos";
+        else if (winStreak === 5) fraseRachaGanadora = "No hay quinto malo, llevan 5 ganadas, prácticamente están jugando sólos";
       }
 
       // "¡Coño por fin ganaron/ganó una!" — solo tras 2+ revanchas, si el ganador
