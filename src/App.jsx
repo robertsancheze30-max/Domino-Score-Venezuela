@@ -96,6 +96,8 @@ const _audioCache = new Map();
 // (en minúscula) a la izquierda, y cómo debe "leerlo" el locutor a la derecha.
 const TTS_NAME_FIXES = {
   "marlene": "Marléne",
+  "guillermo": "Guiyermo",
+  "rayó": "Ra-yó",
 };
 function ttsSafeText(text) {
   if (!text) return text;
