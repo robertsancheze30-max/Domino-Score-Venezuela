@@ -86,22 +86,40 @@ function setAnnouncerMuted(m) {
   if (_masterGain) { try { _masterGain.gain.value = m ? 0 : announcerSettings.volume / 100; } catch (e) {} }
 }
 
+const _audioCache = new Map();
+
+async function fetchAndDecodeTTS(text) {
+  if (_audioCache.has(text)) return _audioCache.get(text);
+  const res = await fetch("/api/tts", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) return null;
+  const arrayBuffer = await res.arrayBuffer();
+  if (!arrayBuffer || arrayBuffer.byteLength === 0) return null;
+  const ctx = getAudioCtx();
+  const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
+  _audioCache.set(text, audioBuffer);
+  return audioBuffer;
+}
+
+// Descarga y decodifica por adelantado, sin reproducir, para que suene instantáneo
+// la primera vez que se presione un botón (ej: nombres de jugadores al iniciar la partida)
+function preloadSpeak(text) {
+  if (!text || announcerSettings.muted) return;
+  fetchAndDecodeTTS(text).catch(() => {});
+}
+
 async function elevenSpeak(text, onEnd) {
   if (announcerSettings.muted) {
     if (onEnd) onEnd();
     return true;
   }
   try {
-    const res = await fetch("/api/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    });
-    if (!res.ok) return false;
-    const arrayBuffer = await res.arrayBuffer();
-    if (!arrayBuffer || arrayBuffer.byteLength === 0) return false;
+    const audioBuffer = await fetchAndDecodeTTS(text);
+    if (!audioBuffer) return false;
     const ctx = getAudioCtx();
-    const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
     if (_voiceSource) {
       try { _voiceSource.stop(); } catch (e) {}
     }
@@ -150,22 +168,40 @@ const loadGame = () => {
 };
 
 const Confetti = () => {
-  const pieces = Array.from({ length: 30 }, (_, i) => ({
+  const pieces = Array.from({ length: 70 }, (_, i) => ({
     id: i, x: Math.random() * 100,
-    delay: Math.random() * 1.5, dur: 2 + Math.random() * 2,
-    color: ["#FFD700", "#CC0001", "#0033A0", "#FF6B35", "#fff"][i % 5],
-    size: 8 + Math.random() * 8,
+    delay: Math.random() * 1.2, dur: 2 + Math.random() * 2.2,
+    color: ["#FFD700", "#CC0001", "#0033A0", "#FF6B35", "#fff", "#00C853", "#FF4FD8"][i % 7],
+    size: 7 + Math.random() * 10,
+    sway: 20 + Math.random() * 60,
+    swayDir: Math.random() > 0.5 ? 1 : -1,
+  }));
+  const bursts = ["🎉", "🎊", "🥳", "⭐", "🏆"];
+  const emojis = Array.from({ length: 16 }, (_, i) => ({
+    id: i, x: Math.random() * 100,
+    delay: Math.random() * 1.5, dur: 2.2 + Math.random() * 2,
+    emoji: bursts[i % bursts.length],
+    size: 22 + Math.random() * 20,
   }));
   return (
     <>
       {pieces.map(p => (
         <div key={p.id} style={{
           position: "fixed", left: p.x + "%", top: -20,
+          "--sway": `${p.swayDir * p.sway}px`,
           width: p.size, height: p.size, background: p.color,
           borderRadius: Math.random() > 0.5 ? "50%" : "2px",
-          animation: "confettiFall " + p.dur + "s " + p.delay + "s linear forwards",
+          animation: "confettiFall " + p.dur + "s " + p.delay + "s ease-in forwards",
           zIndex: 9999, pointerEvents: "none",
         }} />
+      ))}
+      {emojis.map(e => (
+        <div key={"e" + e.id} style={{
+          position: "fixed", left: e.x + "%", top: -30,
+          fontSize: e.size, lineHeight: 1,
+          animation: "confettiEmoji " + e.dur + "s " + e.delay + "s ease-in forwards",
+          zIndex: 9999, pointerEvents: "none",
+        }}>{e.emoji}</div>
       ))}
     </>
   );
@@ -2088,6 +2124,12 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
   const tc = teamColors;
   const names = [team1, team2];
 
+  // Precarga el audio de los nombres al entrar a la partida, para que el botón
+  // de "decir nombre" en la ficha de puntaje suene al instante, sin espera.
+  useEffect(() => {
+    names.forEach(n => preloadSpeak(n));
+  }, []);
+
   // Al entrar a esta pantalla, siempre empezar arriba del todo
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -2417,7 +2459,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const esSegundoEnAnotar = eraPrimerPuntoDeEste && elOtroYaTeniaPuntos;
       const plural = roundCycle === 4;
 
-      const fraseRonda = pts <= 5 ? frasesPocoPuntaje(names[i], pts, plural) : frasesPunto(names[i], pts, newScores[i], plural);
+      const fraseRonda = pts <= 7 ? frasesPocoPuntaje(names[i], pts, plural) : frasesPunto(names[i], pts, newScores[i], plural);
       const secuencia = [];
 
       if (esSegundoEnAnotar) {
@@ -2640,7 +2682,8 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         @keyframes sparkPop { 0%,100%{opacity:0;transform:translateX(-50%) scale(0.6)} 50%{opacity:1;transform:translateX(-50%) scale(1.3)} }
         @keyframes bounce { 0%,100%{transform:scale(1) rotate(-5deg)} 50%{transform:scale(1.15) rotate(5deg)} }
         @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
-        @keyframes confettiFall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+        @keyframes confettiFall { 0%{transform:translate(0,-20px) rotate(0deg);opacity:1} 50%{transform:translate(var(--sway),55vh) rotate(400deg);opacity:1} 100%{transform:translate(0,110vh) rotate(760deg);opacity:0} }
+        @keyframes confettiEmoji { 0%{transform:translateY(-30px) scale(0.6) rotate(-10deg);opacity:0} 15%{opacity:1;transform:translateY(10vh) scale(1.1) rotate(5deg)} 100%{transform:translateY(110vh) scale(1) rotate(15deg);opacity:0} }
         @keyframes starSpin { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.2)} 100%{transform:rotate(360deg) scale(1)} }
         @keyframes casinoCardPulse { 0%,100%{ box-shadow: 0 0 18px currentColor, 0 0 32px transparent, inset 0 0 16px #00000099 } 50%{ box-shadow: 0 0 28px currentColor, 0 0 46px currentColor, inset 0 0 20px #00000099 } }
         @keyframes casinoShimmer { 0%{ background-position: -150% 0 } 100%{ background-position: 250% 0 } }
@@ -2957,6 +3000,14 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
               }}>
                 {names[i]}
               </div>
+              <button
+                onClick={() => { playClick(); speakSequence([names[i]]); }}
+                style={{
+                  position: "absolute", inset: 0,
+                  background: "none", border: "none", padding: 0, margin: 0, cursor: "pointer", opacity: 0,
+                }}
+                aria-label={`Decir nombre de ${names[i]}`}
+              />
             </div>
 
             {/* Score number */}
@@ -3333,6 +3384,12 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
   const tc = teamColors;
   const names = playerNames;
 
+  // Precarga el audio de los nombres al entrar a la partida, para que el botón
+  // de "decir nombre" en la ficha de puntaje suene al instante, sin espera.
+  useEffect(() => {
+    names.forEach(n => preloadSpeak(n));
+  }, []);
+
   const speak = (text) => {
     elevenSpeak(text).then((ok) => {
       if (ok) return;
@@ -3518,7 +3575,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         secuencia.push(rompeHielo[Math.floor(Math.random() * rompeHielo.length)]);
       }
 
-      const frasesIndividual = pts <= 5 ? [
+      const frasesIndividual = pts <= 7 ? [
         `Es mejor coger ${pts} que ${pts} cojan a uno. ${names[i]} anotó ${pts} puntos`,
         `Algo es algo. ${names[i]} se llevó ${pts} puntitos`,
       ] : [
@@ -3531,9 +3588,14 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
 
       // Anunciar solo si el jugador que ACABA de sumar quedó a 8 puntos o menos de ganar
       const restanteJugadorActual = meta - newScores[i];
-      const cercaDeMeta = restanteJugadorActual <= 8 && restanteJugadorActual > 0;
-      if (cercaDeMeta) {
+      if (restanteJugadorActual >= 4 && restanteJugadorActual <= 8) {
         secuencia.push("Todavía no se va");
+      } else if (restanteJugadorActual === 3) {
+        secuencia.push("Que cagada, te faltaron 3 puntos para ganar");
+      } else if (restanteJugadorActual === 2) {
+        secuencia.push("Que cagada, te faltaron 2 puntos para ganar");
+      } else if (restanteJugadorActual === 1) {
+        secuencia.push("Que cagada, te faltó un pelo e' culo para ganar");
       }
 
       // Se dice solo cuando TODOS los jugadores están a 5 puntos o menos de ganar
@@ -3602,7 +3664,8 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         @keyframes neonText { 0%,100%{ text-shadow: 0 0 8px #FFD700, 0 0 18px #FFD70099, 0 0 32px #FFD70055 } 50%{ text-shadow: 0 0 14px #FFD700, 0 0 28px #FFD700cc, 0 0 48px #FFD70088 } }
         @keyframes bounce { 0%,100%{transform:scale(1) rotate(-5deg)} 50%{transform:scale(1.15) rotate(5deg)} }
         @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
-        @keyframes confettiFall { 0%{transform:translateY(-20px) rotate(0deg);opacity:1} 100%{transform:translateY(110vh) rotate(720deg);opacity:0} }
+        @keyframes confettiFall { 0%{transform:translate(0,-20px) rotate(0deg);opacity:1} 50%{transform:translate(var(--sway),55vh) rotate(400deg);opacity:1} 100%{transform:translate(0,110vh) rotate(760deg);opacity:0} }
+        @keyframes confettiEmoji { 0%{transform:translateY(-30px) scale(0.6) rotate(-10deg);opacity:0} 15%{opacity:1;transform:translateY(10vh) scale(1.1) rotate(5deg)} 100%{transform:translateY(110vh) scale(1) rotate(15deg);opacity:0} }
         @keyframes casinoCardPulse { 0%,100%{ box-shadow: 0 0 18px currentColor, 0 0 32px transparent, inset 0 0 16px #00000099 } 50%{ box-shadow: 0 0 28px currentColor, 0 0 46px currentColor, inset 0 0 20px #00000099 } }
         @keyframes casinoShimmer { 0%{ background-position: -150% 0 } 100%{ background-position: 250% 0 } }
         @keyframes casinoScan { 0%{ transform: translateY(-100%) } 100%{ transform: translateY(200%) } }
@@ -3836,6 +3899,14 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
                 }}>
                   {names[i]}
                 </div>
+                <button
+                  onClick={() => { playClick(); speakSequence([names[i]]); }}
+                  style={{
+                    position: "absolute", inset: 0,
+                    background: "none", border: "none", padding: 0, margin: 0, cursor: "pointer", opacity: 0,
+                  }}
+                  aria-label={`Decir nombre de ${names[i]}`}
+                />
               </div>
 
               <div style={{
@@ -4341,3 +4412,4 @@ export default function App() {
 
   return <ModeMenuScreen onSelectMode={(m) => setMode(m)} audioUnlocked={audioUnlocked} isPro={isPro} onUnlockPro={unlockPro} colorTheme={colorTheme} onChangeColorTheme={changeColorTheme} />;
 }
+
