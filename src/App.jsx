@@ -88,7 +88,27 @@ function setAnnouncerMuted(m) {
 
 const _audioCache = new Map();
 
-async function fetchAndDecodeTTS(text) {
+// Algunos nombres los confunde el locutor con inglés (ej: "Marlene" suena como
+// nombre en inglés/alemán). Aquí se corrige la ortografía SOLO para lo que
+// escucha el locutor (en pantalla el nombre se sigue viendo normal), agregando
+// tildes que fuerzan la pronunciación correcta en español.
+// Para agregar más casos: escribe el nombre tal cual lo escribes en la app
+// (en minúscula) a la izquierda, y cómo debe "leerlo" el locutor a la derecha.
+const TTS_NAME_FIXES = {
+  "marlene": "Marléne",
+};
+function ttsSafeText(text) {
+  if (!text) return text;
+  let out = text;
+  for (const [wrong, fixed] of Object.entries(TTS_NAME_FIXES)) {
+    const re = new RegExp(`\\b${wrong}\\b`, "gi");
+    out = out.replace(re, fixed);
+  }
+  return out;
+}
+
+async function fetchAndDecodeTTS(rawText) {
+  const text = ttsSafeText(rawText);
   if (_audioCache.has(text)) return _audioCache.get(text);
   const res = await fetch("/api/tts", {
     method: "POST",
