@@ -583,7 +583,7 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
         backgroundImage: `url(${SETUP_BG_NEW_BASE64})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        transform: "scale(1.06)",
+        transform: "scale(1)",
         zIndex: 0,
       }} />
       <style>{`
@@ -879,7 +879,7 @@ function Setup1v1Screen({ onStart, onBack, isPro, colorTheme }) {
         backgroundImage: `url(${SETUP_BG_NEW_BASE64})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        transform: "scale(1.06)",
+        transform: "scale(1)",
         zIndex: 0,
       }} />
       <style>{`
@@ -1137,7 +1137,7 @@ function Setup3pScreen({ onStart, onBack, isPro, colorTheme }) {
         backgroundImage: `url(${SETUP_BG_NEW_BASE64})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        transform: "scale(1.06)",
+        transform: "scale(1)",
         zIndex: 0,
       }} />
       <style>{`
@@ -1376,7 +1376,7 @@ function Setup4pScreen({ onStart, onBack, isPro, colorTheme }) {
         backgroundImage: `url(${SETUP_BG_NEW_BASE64})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        transform: "scale(1.06)",
+        transform: "scale(1)",
         zIndex: 0,
       }} />
       <style>{`
