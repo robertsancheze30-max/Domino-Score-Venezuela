@@ -2418,6 +2418,9 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const peorDeficit = Math.min(...deficits);
       const huboRemontada = peorDeficit <= -umbralRemontada;
 
+      // Ganó cayendo justo en la meta (ni de más ni de menos)
+      const ganoJusto = newScores[newWinner] === meta;
+
       // Pareja de jugadores (no el nombre de equipo) para rastrear derrotas
       // sin importar en qué equipo (1 o 2) hayan quedado registrados
       const pairKey = (a, b) => [a, b].map(s => (s || "").trim().toLowerCase()).sort().join("__");
@@ -2476,6 +2479,9 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         playSound("zapato");
         const secuenciaZapato = [];
         if (fraseRachaGanadora) secuenciaZapato.push(fraseRachaGanadora);
+        if (ganoJusto) secuenciaZapato.push(roundCycle === 4
+          ? `¡VERGA! agarraron justo los ${pts} puntos para ganar, son unos templados`
+          : `¡VERGA! agarró justo los ${pts} puntos para ganar, es un templado`);
         if (esPrimeraVezQueGana) secuenciaZapato.push(roundCycle === 4 ? "Coño, por fin ganaron una!" : "Coño, por fin ganó una!");
         secuenciaZapato.push(frasesZapato(names[newWinner], names[loser], roundCycle === 4));
         if (esSegundaDerrota) secuenciaZapato.push(fraseDerrotas);
@@ -2485,6 +2491,9 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         const secuenciaGanador = [];
         if (fraseRachaGanadora) secuenciaGanador.push(fraseRachaGanadora);
         if (huboRemontada) secuenciaGanador.push(`¡Qué manera de remontar! Nadie daba un Bolívar por ${names[newWinner]}`);
+        if (ganoJusto) secuenciaGanador.push(roundCycle === 4
+          ? `¡VERGA! agarraron justo los ${pts} puntos para ganar, son unos templados`
+          : `¡VERGA! agarró justo los ${pts} puntos para ganar, es un templado`);
         if (esPrimeraVezQueGana) secuenciaGanador.push(roundCycle === 4 ? "Coño, por fin ganaron una!" : "Coño, por fin ganó una!");
         secuenciaGanador.push(frasesGanador(names[newWinner], newScores[newWinner], roundCycle === 4));
         secuenciaGanador.push(frasesPerdedor(names[loser], roundCycle === 4));
@@ -3585,6 +3594,10 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         `Este pana sí que sabe jugar Dominó, ganó con ${newScores[newWinner]} puntos`,
       ];
       const secuenciaFinal = [frasesGanar[pickVaried('ganadorMulti', frasesGanar.length)]];
+
+      if (newScores[newWinner] === meta) {
+        secuenciaFinal.unshift(`¡VERGA! agarró justo los ${pts} puntos para ganar, es un templado`);
+      }
 
       if (zapateros.length === 1) {
         secuenciaFinal.push(`${zapateros[0]} se llevó el zapato. Cero puntos! Qué malo! Le toca brindar las cervezas`);
