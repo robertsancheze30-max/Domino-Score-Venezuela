@@ -2403,7 +2403,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
     return f[pickVaried('empate', f.length)];
   };
 
-  const frasesGanador = (nombre, total, plural = false) => {
+  const frasesGanador = (nombre, total, plural = false, exceso = 0) => {
     const f = plural ? [
       "Llegaron los campeones! " + nombre + " ganaron la partida con " + total + " puntos. Felicitaciones" + chamo(true),
       "Así si es jugar dominó! " + nombre + " se coronaron con " + total + " puntos" + vale(),
@@ -2417,6 +2417,15 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "El rey del dominó es " + nombre + " con " + total + " puntos",
       "Este pana sí que sabe jugar Dominó, ganó con " + total + " puntos",
     ];
+    if (exceso > 0 && exceso <= 9) {
+      if (plural) {
+        f.push(`Estos panas no creen en nadie.. le sobraron ${exceso} puntos y ganan la partida con ${total}`);
+        f.push(`Estos muchachos no creen en nadie.. le sobraron ${exceso} puntos y ganan la partida con ${total}`);
+      } else {
+        f.push(`Este pana no cree en nadie.. le sobraron ${exceso} puntos y gana la partida con ${total}`);
+        f.push(`Este muchacho no cree en nadie.. le sobraron ${exceso} puntos y gana la partida con ${total}`);
+      }
+    }
     return f[pickVaried('ganador', f.length)];
   };
 
@@ -2497,6 +2506,8 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
       // Ganó cayendo justo en la meta (ni de más ni de menos)
       const ganoJusto = newScores[newWinner] === meta;
+      const excesoSobreMeta = newScores[newWinner] - meta;
+      const ganoConExceso = excesoSobreMeta > 0 && excesoSobreMeta <= 9;
 
       // Pareja de jugadores (no el nombre de equipo) para rastrear derrotas
       // sin importar en qué equipo (1 o 2) hayan quedado registrados
@@ -2568,7 +2579,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         if (fraseRachaGanadora) secuenciaGanador.push(fraseRachaGanadora);
         if (huboRemontada) secuenciaGanador.push(`¡Qué manera de remontar! Nadie daba un Bolívar por ${names[newWinner]}`);
         if (esPrimeraVezQueGana) secuenciaGanador.push(roundCycle === 4 ? "Coño, por fin ganaron una!" : "Coño, por fin ganó una!");
-        secuenciaGanador.push(frasesGanador(names[newWinner], newScores[newWinner], roundCycle === 4));
+        secuenciaGanador.push(frasesGanador(names[newWinner], newScores[newWinner], roundCycle === 4, ganoConExceso ? excesoSobreMeta : 0));
         secuenciaGanador.push(frasesPerdedor(names[loser], roundCycle === 4));
         if (esSegundaDerrota) secuenciaGanador.push(fraseDerrotas);
         setTimeout(() => speakSequence(secuenciaGanador), 1400);
@@ -3681,6 +3692,8 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       const updated = [...matchHistory, newMatch];
       setMatchHistory(updated);
       try { localStorage.setItem("losmalucos-matches-multi", JSON.stringify(updated)); } catch(e) {}
+      const excesoSobreMetaMulti = newScores[newWinner] - meta;
+      const ganoConExcesoMulti = excesoSobreMetaMulti > 0 && excesoSobreMetaMulti <= 9;
       const frasesGanar = [
         `Llegó el campeon! ${names[newWinner]} ganó la partida con ${newScores[newWinner]} puntos. Felicitaciones`,
         `Así si es jugar dominó! ${names[newWinner]} se coronó con ${newScores[newWinner]} puntos`,
@@ -3688,6 +3701,10 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         `El rey del dominó es ${names[newWinner]} con ${newScores[newWinner]} puntos`,
         `Este pana sí que sabe jugar Dominó, ganó con ${newScores[newWinner]} puntos`,
       ];
+      if (ganoConExcesoMulti) {
+        frasesGanar.push(`Este pana no cree en nadie.. le sobraron ${excesoSobreMetaMulti} puntos y gana la partida con ${newScores[newWinner]}`);
+        frasesGanar.push(`Este muchacho no cree en nadie.. le sobraron ${excesoSobreMetaMulti} puntos y gana la partida con ${newScores[newWinner]}`);
+      }
       const secuenciaFinal = [frasesGanar[pickVaried('ganadorMulti', frasesGanar.length)]];
 
       if (newScores[newWinner] === meta) {
