@@ -2147,10 +2147,11 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
   const tc = teamColors;
   const names = [team1, team2];
 
-  // Precarga el audio de los nombres al entrar a la partida, para que el botón
-  // de "decir nombre" en la ficha de puntaje suene al instante, sin espera.
+  // Precarga el audio de los nombres y del título del encabezado al entrar a la
+  // partida, para que ambos botones suenen al instante, sin espera.
   useEffect(() => {
     names.forEach(n => preloadSpeak(n));
+    preloadSpeak(roundCycle === 4 ? "Una partida de malos" : "Duelo individual");
   }, []);
 
   // Al entrar a esta pantalla, siempre empezar arriba del todo
@@ -3444,10 +3445,11 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
   const tc = teamColors;
   const names = playerNames;
 
-  // Precarga el audio de los nombres al entrar a la partida, para que el botón
-  // de "decir nombre" en la ficha de puntaje suene al instante, sin espera.
+  // Precarga el audio de los nombres y del título del encabezado al entrar a la
+  // partida, para que ambos botones suenen al instante, sin espera.
   useEffect(() => {
     names.forEach(n => preloadSpeak(n));
+    preloadSpeak("Todos contra todos");
   }, []);
 
   const speak = (text) => {
@@ -4348,17 +4350,16 @@ export default function App() {
   useEffect(() => {
     const unlock = () => {
       if (audioUnlocked) return;
-      // Desbloquear AudioContext
+      // Desbloquear AudioContext (el mismo que usa el locutor para reproducir voz,
+      // creado y resumido aquí mismo, dentro del toque del usuario, para que iOS
+      // no lo deje "suspendido" cuando se hable después sin retraso)
       try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const ctx = getAudioCtx();
         const buf = ctx.createBuffer(1, 1, 22050);
         const src = ctx.createBufferSource();
         src.buffer = buf;
         src.connect(ctx.destination);
         src.start(0);
-        ctx.resume().then(() => {
-          if (_ctx) _ctx.resume();
-        });
       } catch(e) {}
       // Desbloquear SpeechSynthesis en iOS
       try {
@@ -4385,16 +4386,13 @@ export default function App() {
     };
   }, []);
 
-  // Mensaje de bienvenida hablado, 1 segundo después de que el audio quede desbloqueado.
+  // Mensaje de bienvenida hablado, apenas se desbloquea el audio (sin espera).
   // Vive en App (no en ModeMenuScreen) para que no se cancele si el usuario cambia de pantalla rápido.
   const welcomeSpokenRef = useRef(false);
   useEffect(() => {
     if (!audioUnlocked || welcomeSpokenRef.current) return;
     welcomeSpokenRef.current = true;
-    const t = setTimeout(() => {
-      elevenSpeak("¡Bienvenidos... a Dominó Score Venezuela!");
-    }, 1000);
-    return () => clearTimeout(t);
+    elevenSpeak("¡Bienvenidos... a Dominó Score Venezuela!");
   }, [audioUnlocked]);
 
   if (loading) return (
