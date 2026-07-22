@@ -313,6 +313,69 @@ const playRealisticKeyClick = () => {
   } catch (e) {}
 };
 
+// Golpe de ficha de dominó al anotar puntos (clack de madera/resina + rebote)
+const playDominoClack = () => {
+  if (announcerSettings.muted) return;
+  try {
+    const ctx = getAudioCtx();
+    const now = ctx.currentTime;
+
+    // Golpe seco de contacto (ficha golpeando la mesa)
+    const bufferSize = Math.floor(ctx.sampleRate * 0.02);
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 3);
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+    const bandpass = ctx.createBiquadFilter();
+    bandpass.type = "bandpass";
+    bandpass.frequency.setValueAtTime(3500, now);
+    bandpass.Q.setValueAtTime(0.9, now);
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.35, now);
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+    noise.connect(bandpass); bandpass.connect(noiseGain); noiseGain.connect(getMasterGain(ctx));
+    noise.start(now); noise.stop(now + 0.02);
+
+    // Cuerpo del golpe: resonancia grave corta tipo "toc" de mesa
+    const body = ctx.createOscillator();
+    const bodyGain = ctx.createGain();
+    body.type = "triangle";
+    body.frequency.setValueAtTime(220, now);
+    body.frequency.exponentialRampToValueAtTime(110, now + 0.05);
+    bodyGain.gain.setValueAtTime(0.22, now);
+    bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+    body.connect(bodyGain); bodyGain.connect(getMasterGain(ctx));
+    body.start(now); body.stop(now + 0.07);
+
+    // Pequeño rebote (la ficha asentándose sobre la mesa)
+    setTimeout(() => {
+      try {
+        const ctx2 = getAudioCtx();
+        const t = ctx2.currentTime;
+        const bufferSize2 = Math.floor(ctx2.sampleRate * 0.012);
+        const buffer2 = ctx2.createBuffer(1, bufferSize2, ctx2.sampleRate);
+        const data2 = buffer2.getChannelData(0);
+        for (let i = 0; i < bufferSize2; i++) {
+          data2[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize2, 3);
+        }
+        const noise2 = ctx2.createBufferSource();
+        noise2.buffer = buffer2;
+        const bandpass2 = ctx2.createBiquadFilter();
+        bandpass2.type = "bandpass";
+        bandpass2.frequency.setValueAtTime(2800, t);
+        const noiseGain2 = ctx2.createGain();
+        noiseGain2.gain.setValueAtTime(0.15, t);
+        noiseGain2.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
+        noise2.connect(bandpass2); bandpass2.connect(noiseGain2); noiseGain2.connect(getMasterGain(ctx2));
+        noise2.start(t); noise2.stop(t + 0.015);
+      } catch (e) {}
+    }, 45);
+  } catch (e) {}
+};
+
 const playBeep = (freq, type, duration, volume) => {
   if (announcerSettings.muted) return;
   try {
@@ -2502,6 +2565,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         setTimeout(() => speakSequence(secuenciaGanador), 1400);
       }
     } else {
+      playDominoClack();
       playSound("point");
       const eraPrimerPuntoDeEste = scores[i] === 0;
       const elOtroYaTeniaPuntos = scores[1 - i] > 0;
@@ -2695,6 +2759,25 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
       const dataUrl = canvas.toDataURL("image/png");
       if (!dataUrl || dataUrl === "data:,") { alert("toDataURL devolvió vacío"); return; }
+
+      // Intentar el panel nativo de compartir de iOS (ahí aparece Instagram Stories,
+      // WhatsApp, Mensajes, etc. si el usuario tiene esas apps instaladas).
+      try {
+        const blob = await (await fetch(dataUrl)).blob();
+        const file = new File([blob], "domino-resultado.png", { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: "Dominó Score Venezuela",
+          });
+          return; // el usuario ya eligió a dónde compartir, no hace falta el modal
+        }
+      } catch (shareErr) {
+        // Si el usuario cancela el panel nativo (AbortError) no mostramos el modal de respaldo
+        if (shareErr && shareErr.name === "AbortError") return;
+        // Cualquier otro error (o falta de soporte): seguimos al modal de guardar manualmente
+      }
+
       setShareImageUrl(dataUrl);
     } catch (e) {
       console.error("Error generando imagen:", e);
@@ -3558,6 +3641,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
     const newWinner = newScores[i] >= meta ? i : null;
     setScores(newScores);
     setInputs(Array(n).fill(""));
+    playDominoClack();
     playSound("point");
     if (newWinner !== null) {
       setWinner(newWinner);
