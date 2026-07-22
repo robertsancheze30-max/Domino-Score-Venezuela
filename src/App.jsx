@@ -334,7 +334,7 @@ const playDominoClack = () => {
     bandpass.frequency.setValueAtTime(3500, now);
     bandpass.Q.setValueAtTime(0.9, now);
     const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.35, now);
+    noiseGain.gain.setValueAtTime(0.7, now);
     noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
     noise.connect(bandpass); bandpass.connect(noiseGain); noiseGain.connect(getMasterGain(ctx));
     noise.start(now); noise.stop(now + 0.02);
@@ -345,7 +345,7 @@ const playDominoClack = () => {
     body.type = "triangle";
     body.frequency.setValueAtTime(220, now);
     body.frequency.exponentialRampToValueAtTime(110, now + 0.05);
-    bodyGain.gain.setValueAtTime(0.22, now);
+    bodyGain.gain.setValueAtTime(0.45, now);
     bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
     body.connect(bodyGain); bodyGain.connect(getMasterGain(ctx));
     body.start(now); body.stop(now + 0.07);
@@ -2442,6 +2442,19 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
     return f[pickVaried('zapato', f.length)];
   };
 
+  // Frase para cuando alguien gana con los puntos justos de la meta (sin pasarse).
+  // Dos variantes que alternan la exclamación inicial, siempre disparada primero.
+  const fraseGanoJusto = (pts, plural = false) => {
+    const f = plural ? [
+      `¡VERGA! agarraron justo los ${pts} puntos para ganar, son unos templados`,
+      `¡NAGUARÁ! agarraron justo los ${pts} puntos para ganar, son unos templados`,
+    ] : [
+      `¡VERGA! agarró justo los ${pts} puntos para ganar, es un templado`,
+      `¡NAGUARÁ! agarró justo los ${pts} puntos para ganar, es un templado`,
+    ];
+    return f[pickVaried('ganoJusto', f.length)];
+  };
+
   const playClick = () => {
     if (announcerSettings.muted) return;
     try {
@@ -2542,10 +2555,8 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       if (newScores[loser] === 0) {
         playSound("zapato");
         const secuenciaZapato = [];
+        if (ganoJusto) secuenciaZapato.push(fraseGanoJusto(pts, roundCycle === 4));
         if (fraseRachaGanadora) secuenciaZapato.push(fraseRachaGanadora);
-        if (ganoJusto) secuenciaZapato.push(roundCycle === 4
-          ? `¡VERGA! agarraron justo los ${pts} puntos para ganar, son unos templados`
-          : `¡VERGA! agarró justo los ${pts} puntos para ganar, es un templado`);
         if (esPrimeraVezQueGana) secuenciaZapato.push(roundCycle === 4 ? "Coño, por fin ganaron una!" : "Coño, por fin ganó una!");
         secuenciaZapato.push(frasesZapato(names[newWinner], names[loser], roundCycle === 4));
         if (esSegundaDerrota) secuenciaZapato.push(fraseDerrotas);
@@ -2553,11 +2564,9 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       } else {
         playSound("win");
         const secuenciaGanador = [];
+        if (ganoJusto) secuenciaGanador.push(fraseGanoJusto(pts, roundCycle === 4));
         if (fraseRachaGanadora) secuenciaGanador.push(fraseRachaGanadora);
         if (huboRemontada) secuenciaGanador.push(`¡Qué manera de remontar! Nadie daba un Bolívar por ${names[newWinner]}`);
-        if (ganoJusto) secuenciaGanador.push(roundCycle === 4
-          ? `¡VERGA! agarraron justo los ${pts} puntos para ganar, son unos templados`
-          : `¡VERGA! agarró justo los ${pts} puntos para ganar, es un templado`);
         if (esPrimeraVezQueGana) secuenciaGanador.push(roundCycle === 4 ? "Coño, por fin ganaron una!" : "Coño, por fin ganó una!");
         secuenciaGanador.push(frasesGanador(names[newWinner], newScores[newWinner], roundCycle === 4));
         secuenciaGanador.push(frasesPerdedor(names[loser], roundCycle === 4));
@@ -2566,7 +2575,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       }
     } else {
       playDominoClack();
-      playSound("point");
+      setTimeout(() => playSound("point"), 90);
       const eraPrimerPuntoDeEste = scores[i] === 0;
       const elOtroYaTeniaPuntos = scores[1 - i] > 0;
       const esSegundoEnAnotar = eraPrimerPuntoDeEste && elOtroYaTeniaPuntos;
@@ -3642,7 +3651,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
     setScores(newScores);
     setInputs(Array(n).fill(""));
     playDominoClack();
-    playSound("point");
+    setTimeout(() => playSound("point"), 90);
     if (newWinner !== null) {
       setWinner(newWinner);
       setShowConfetti(true);
@@ -3682,7 +3691,11 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       const secuenciaFinal = [frasesGanar[pickVaried('ganadorMulti', frasesGanar.length)]];
 
       if (newScores[newWinner] === meta) {
-        secuenciaFinal.unshift(`¡VERGA! agarró justo los ${pts} puntos para ganar, es un templado`);
+        const fraseJustoMulti = [
+          `¡VERGA! agarró justo los ${pts} puntos para ganar, es un templado`,
+          `¡NAGUARÁ! agarró justo los ${pts} puntos para ganar, es un templado`,
+        ];
+        secuenciaFinal.unshift(fraseJustoMulti[pickVaried('ganoJustoMulti', fraseJustoMulti.length)]);
       }
 
       if (zapateros.length === 1) {
