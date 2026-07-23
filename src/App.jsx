@@ -246,6 +246,16 @@ const pickVaried = (poolKey, total) => {
   return idx;
 };
 
+// Variantes para anunciar de quién es el turno, usadas en los 4 modos de juego.
+const fraseSale = (nombre) => {
+  const f = [
+    `Sale ${nombre}`,
+    `Le toca a ${nombre}`,
+    `Turno de ${nombre}`,
+  ];
+  return f[pickVaried('sale', f.length)];
+};
+
 const getAudioCtx = () => {
   if (!_ctx || _ctx.state === "closed") {
     _ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2624,6 +2634,32 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const fraseRonda = pts <= 7 ? frasesPocoPuntaje(names[i], pts, plural) : frasesPunto(names[i], pts, newScores[i], plural);
       const secuencia = [];
 
+      // Racha de anotación: cuántas rondas seguidas (incluyendo esta) anotó
+      // este equipo/jugador sin que el otro anotara nada. Solo suena justo
+      // al llegar a 3 rondas seguidas (no en la 4ta, 5ta, etc.)
+      const rondasParaRacha = [...history, { added: [i === 0 ? pts : 0, i === 1 ? pts : 0], tie: false }];
+      let rachaAnotacion = 0;
+      for (let k = rondasParaRacha.length - 1; k >= 0; k--) {
+        const r = rondasParaRacha[k];
+        if (r.tie || !(r.added[i] > 0 && r.added[1 - i] === 0)) break;
+        rachaAnotacion++;
+      }
+      if (rachaAnotacion === 3) {
+        secuencia.push(plural
+          ? "Pareciera que jugaran solos porque el otro equipo no raya"
+          : "Pareciera que jugara solo porque el otro jugador no raya");
+      }
+      if (rachaAnotacion === 5) {
+        const fraseRachaCinco = plural ? [
+          "Sin duda alguna que estos panas están jugando sólos",
+          "Sin duda alguna que estos chamos están jugando sólos",
+        ] : [
+          "Sin duda alguna que este pana está jugando sólo",
+          "Sin duda alguna que este chamo está jugando sólo",
+        ];
+        secuencia.push(fraseRachaCinco[pickVaried('rachaCinco', fraseRachaCinco.length)]);
+      }
+
       if (esSegundoEnAnotar) {
         const frasesRompeHielo = plural ? [
           `${names[i]} le pusieron el número a la casa`,
@@ -2636,6 +2672,19 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       }
 
       secuencia.push(fraseRonda);
+
+      // Partida que se está alargando mucho: según la meta, al llegar EXACTAMENTE
+      // a esa ronda (y no antes ni después) se dispara este comentario.
+      const rondaActualGlobal = roundsPlayed + 1;
+      const rondaLargaPorMeta = { 50: 6, 75: 8, 100: 10 };
+      if (rondaLargaPorMeta[meta] === rondaActualGlobal) {
+        const frasesPartidaLarga = [
+          "Esta partida no se acaba nunca",
+          "Al parecer esta partida es infinita",
+        ];
+        secuencia.push(frasesPartidaLarga[pickVaried('partidaLarga', frasesPartidaLarga.length)]);
+      }
+
 
       const restanteJugadorActual = meta - newScores[i];
       const plural2v2 = roundCycle === 4;
@@ -2673,7 +2722,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       if (roundsPlayed >= 0) {
         const nextPlayer = ((roundsPlayed + 1) % roundCycle) + 1;
         const nextName = players[nextPlayer - 1] || `Jugador ${nextPlayer}`;
-        secuencia.push(`Sale ${nextName}`);
+        secuencia.push(fraseSale(nextName));
       }
 
       setTimeout(() => speakSequence(secuencia), 800);
@@ -2692,7 +2741,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
     if (roundsPlayed >= 0) {
       const nextPlayer = ((roundsPlayed + 1) % roundCycle) + 1;
       const nextName = players[nextPlayer - 1] || `Jugador ${nextPlayer}`;
-      secuencia.push(`Sale ${nextName}`);
+      secuencia.push(fraseSale(nextName));
     }
     speakSequence(secuencia);
   };
@@ -2705,7 +2754,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
     }
     const currentPlayer = (history.length % roundCycle) + 1;
     const currentName = players[currentPlayer - 1] || `Jugador ${currentPlayer}`;
-    speak(`Sale ${currentName}`);
+    speak(fraseSale(currentName));
   };
 
   const handleUndo = () => {
@@ -3778,6 +3827,26 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       const eraPrimero = scores[i] === 0 && history.some(r => !r.tie && r.playerIdx !== i);
       const secuencia = [];
 
+      // Racha de anotación: 3 turnos seguidos anotando sin que nadie más anote
+      // entre medio. Solo suena justo al llegar a 3 (no se repite en la 4ta, 5ta...)
+      const rondasParaRachaMulti = [...history, { playerIdx: i, added: pts, tie: false }];
+      let rachaAnotacionMulti = 0;
+      for (let k = rondasParaRachaMulti.length - 1; k >= 0; k--) {
+        const r = rondasParaRachaMulti[k];
+        if (r.tie || r.playerIdx !== i) break;
+        rachaAnotacionMulti++;
+      }
+      if (rachaAnotacionMulti === 3) {
+        secuencia.push("Pareciera que jugara solo porque los demás no rayan");
+      }
+      if (rachaAnotacionMulti === 5) {
+        const fraseRachaCincoMulti = [
+          "Sin duda alguna que este pana está jugando sólo",
+          "Sin duda alguna que este chamo está jugando sólo",
+        ];
+        secuencia.push(fraseRachaCincoMulti[pickVaried('rachaCincoMulti', fraseRachaCincoMulti.length)]);
+      }
+
       if (eraPrimero) {
         const rompeHielo = [
           `${names[i]} le puso el número a la casa`,
@@ -3799,6 +3868,18 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         `Muchachos.. ${names[i]} ganó la mano con ${pts} puntos`,
       ];
       secuencia.push(frasesIndividual[pickVaried('individualMulti', frasesIndividual.length)]);
+
+      // Partida que se está alargando mucho: según la meta, al llegar EXACTAMENTE
+      // a esa ronda (y no antes ni después) se dispara este comentario.
+      const rondaActualGlobalMulti = roundsPlayed + 1;
+      const rondaLargaPorMetaMulti = { 50: 6, 75: 8, 100: 10 };
+      if (rondaLargaPorMetaMulti[meta] === rondaActualGlobalMulti) {
+        const frasesPartidaLargaMulti = [
+          "Esta partida no se acaba nunca",
+          "Al parecer esta partida es infinita",
+        ];
+        secuencia.push(frasesPartidaLargaMulti[pickVaried('partidaLargaMulti', frasesPartidaLargaMulti.length)]);
+      }
 
       // Anunciar solo si el jugador que ACABA de sumar quedó a 8 puntos o menos de ganar
       const restanteJugadorActual = meta - newScores[i];
@@ -3829,7 +3910,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         secuencia.push("Aquí cualquier culo echa sangre");
       }
 
-      secuencia.push(`Sale ${names[nextIdx]}`);
+      secuencia.push(fraseSale(names[nextIdx]));
 
       setTimeout(() => speakSequence(secuencia), 800);
     }
@@ -3847,7 +3928,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
     playClick();
     if (history.length === 0) { speak("Todavía no ha salido nadie"); return; }
     const nextIdx = history.length % n;
-    speak(`Sale ${names[nextIdx]}`);
+    speak(fraseSale(names[nextIdx]));
   };
 
   const handleUndo = () => {
@@ -4537,7 +4618,11 @@ export default function App() {
   useEffect(() => {
     if (!audioUnlocked || welcomeSpokenRef.current) return;
     welcomeSpokenRef.current = true;
-    elevenSpeak("¡Bienvenidos... a Dominó Score Venezuela!");
+    const hora = new Date().getHours();
+    const saludo = (hora >= 6 && hora < 12) ? "Buenos días"
+      : (hora >= 12 && hora < 19) ? "Buenas tardes"
+      : "Buenas noches";
+    elevenSpeak(`¡${saludo}... bienvenidos a Dominó Score Venezuela!`);
   }, [audioUnlocked]);
 
   if (loading) return (
