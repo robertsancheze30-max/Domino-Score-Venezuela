@@ -2562,10 +2562,10 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       // 2=genérica, 3=locos, 4=no ganan ni haciendo trampa, 5=no divierten...
       // 6=genérica otra vez, 7=locos, 8=no ganan..., 9=no divierten..., 10=genérica, etc.
       const cicloDerrotas = [
-        () => `${names[loser]} ya llevan ${numeroEnPalabras[loserLossCount] || loserLossCount} partidas perdidas, son unos málos!`,
+        () => `${names[loser]} ya llevan ${numeroEnPalabras[loserLossCount] || loserLossCount} partidas perdidas, son unos muertos!`,
         () => `${names[loser]} ya llevan ${numeroEnPalabras[loserLossCount] || loserLossCount} partidas perdidas, son unos locos jugando dominó`,
         () => `Estos perdedores no ganan ni haciendo trampa.. ya llevan ${loserLossCount} derrotas`,
-        () => `${names[loser]} no divierten.. ya tienen ${loserLossCount} partidas y no ven luz.. Retírense!`,
+        () => `${names[loser]} no divierten.. ya tienen ${loserLossCount} partidas perdídas y no ven luz.. Retírense!`,
       ];
       const fraseDerrotas = loserLossCount >= 2
         ? cicloDerrotas[(loserLossCount - 2) % 4]()
@@ -3791,10 +3791,10 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         `Algo es algo. ${names[i]} se llevó ${pts} puntitos`,
         `Ok, ${names[i]} agarró ${pts} puntos`,
       ] : [
-        `Muy bien! ${names[i]} anotó ${pts} puntos. Acumuló ${newScores[i]} en total`,
-        `Así se juega! ${names[i]} se llevó ${pts} puntos. Lleva ${newScores[i]} acumulado`,
-        `Ahí está! ${names[i]} se apuntó ${pts} punticos. Total acumulado ${newScores[i]}`,
-        `${names[i]} suma ${pts}. Acumuló ${newScores[i]} puntos`,
+        `Muy bien! ${names[i]} anotó ${pts} puntos. Va con ${newScores[i]} en total`,
+        `Así se juega! ${names[i]} se llevó ${pts} puntos. Tiene ${newScores[i]} en el marcador`,
+        `Ahí está! ${names[i]} se apuntó ${pts} punticos. Ya lleva ${newScores[i]} en total`,
+        `${names[i]} suma ${pts}. Llegó a los ${newScores[i]} puntos`,
         `Ok, ${names[i]} agarró ${pts} puntos`,
         `Muchachos.. ${names[i]} ganó la mano con ${pts} puntos`,
       ];
