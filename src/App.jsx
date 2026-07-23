@@ -2634,6 +2634,21 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const fraseRonda = pts <= 7 ? frasesPocoPuntaje(names[i], pts, plural) : frasesPunto(names[i], pts, newScores[i], plural);
       const secuencia = [];
 
+      // Se salvó del zapato: anotó por primera vez justo cuando el otro ya
+      // estaba en la zona de "huele a zapato" (mismo umbral según la meta).
+      // Va PRIMERO que todo lo demás, apenas se presiona sumar.
+      const umbralSalvoZapato = { 50: 35, 75: 55, 100: 75 }[meta];
+      if (eraPrimerPuntoDeEste && umbralSalvoZapato && scores[1 - i] >= umbralSalvoZapato) {
+        const frasesSalvoZapato = plural ? [
+          "Salvaron el zapato",
+          "Al menos ya no es zapato",
+        ] : [
+          "Salvó el zapato",
+          "Al menos ya no es zapato",
+        ];
+        secuencia.push(frasesSalvoZapato[pickVaried('salvoZapato', frasesSalvoZapato.length)]);
+      }
+
       // Racha de anotación: cuántas rondas seguidas (incluyendo esta) anotó
       // este equipo/jugador sin que el otro anotara nada. Solo suena justo
       // al llegar a 3 rondas seguidas (no en la 4ta, 5ta, etc.)
@@ -2688,6 +2703,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
       const restanteJugadorActual = meta - newScores[i];
       const plural2v2 = roundCycle === 4;
+
       if (restanteJugadorActual >= 4 && restanteJugadorActual <= 8) {
         secuencia.push(plural2v2 ? "Todavía no se van" : "Todavía no se va");
       } else if (restanteJugadorActual === 3) {
@@ -2717,6 +2733,30 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       });
       if (todosCercaDeMeta) {
         secuencia.push("Aquí cualquier culo echa sangre");
+      }
+
+      // "Huele a zapato": el equipo/jugador con 0 puntos, mientras el otro se
+      // acerca a la meta. 3 frases en cadena según cuántas rondas han pasado
+      // desde que el líder cruzó el umbral (distinto según la meta). Se dice
+      // al final, después de todo lo referente al que acaba de sumar.
+      const o = 1 - i;
+      const umbralZapatoInminente = { 50: 35, 75: 55, 100: 75 };
+      const umbralZI = umbralZapatoInminente[meta];
+      if (umbralZI && newScores[o] === 0 && newScores[i] < meta) {
+        const cruzoAhora = scores[i] < umbralZI && newScores[i] >= umbralZI;
+        if (cruzoAhora) {
+          secuencia.push(plural ? `¡${names[o]} están jediónndo a zapato!` : `¡${names[o]} está jediónndo a zapato!`);
+        } else {
+          const idxCruce = history.findIndex(h => !h.tie && h.totals && h.totals[i] >= umbralZI && h.totals[i] < meta && h.totals[o] === 0);
+          if (idxCruce !== -1) {
+            const distanciaCruce = roundsPlayed - idxCruce;
+            if (distanciaCruce === 1) {
+              secuencia.push(plural ? `¡${names[o]} al parecer les viene el zapato seguro!` : `¡${names[o]} al parecer le viene el zapato seguro!`);
+            } else if (distanciaCruce === 2) {
+              secuencia.push(plural ? "Yo creo que en la próxima ronda si se llevan el zapato" : "Yo creo que en la próxima ronda si se lleva el zapato");
+            }
+          }
+        }
       }
 
       if (roundsPlayed >= 0) {
@@ -3827,6 +3867,18 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       const eraPrimero = scores[i] === 0 && history.some(r => !r.tie && r.playerIdx !== i);
       const secuencia = [];
 
+      // Se salvó del zapato: anotó por primera vez justo cuando algún otro
+      // jugador ya estaba en la zona de "huele a zapato" (mismo umbral según la meta).
+      // Va PRIMERO que todo lo demás, apenas se presiona sumar.
+      const umbralSalvoZapatoMulti = { 50: 35, 75: 55, 100: 75 }[meta];
+      if (eraPrimero && umbralSalvoZapatoMulti && scores.some((s, idx) => idx !== i && s >= umbralSalvoZapatoMulti)) {
+        const frasesSalvoZapatoMulti = [
+          "Salvó el zapato",
+          "Al menos ya no es zapato",
+        ];
+        secuencia.push(frasesSalvoZapatoMulti[pickVaried('salvoZapatoMulti', frasesSalvoZapatoMulti.length)]);
+      }
+
       // Racha de anotación: 3 turnos seguidos anotando sin que nadie más anote
       // entre medio. Solo suena justo al llegar a 3 (no se repite en la 4ta, 5ta...)
       const rondasParaRachaMulti = [...history, { playerIdx: i, added: pts, tie: false }];
@@ -3908,6 +3960,39 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       });
       if (todosCercaDeMeta) {
         secuencia.push("Aquí cualquier culo echa sangre");
+      }
+
+      // "Huele a zapato": todos los demás jugadores siguen en 0 mientras este
+      // se acerca a la meta. 3 frases en cadena según cuántas rondas han
+      // pasado desde que cruzó el umbral (distinto según la meta). Se dice
+      // al final, después de todo lo referente al que acaba de sumar.
+      const umbralZapatoInminenteMulti = { 50: 35, 75: 55, 100: 75 };
+      const umbralZIMulti = umbralZapatoInminenteMulti[meta];
+      const othersEnCero = names.filter((_, idx) => idx !== i && newScores[idx] === 0);
+      if (umbralZIMulti && othersEnCero.length === names.length - 1 && newScores[i] < meta) {
+        const nombresEnCero = othersEnCero.join(" y ");
+        const esUnoSolo = othersEnCero.length === 1;
+        const cruzoAhoraMulti = scores[i] < umbralZIMulti && newScores[i] >= umbralZIMulti;
+        if (cruzoAhoraMulti) {
+          secuencia.push(esUnoSolo ? `¡${nombresEnCero} está jediónndo a zapato!` : `¡${nombresEnCero} están jediónndo a zapato!`);
+        } else {
+          let running = 0;
+          let idxCruceMulti = -1;
+          for (let k = 0; k < history.length; k++) {
+            const h = history[k];
+            if (h.tie) continue;
+            running += h.added;
+            if (idxCruceMulti === -1 && running >= umbralZIMulti && running < meta) idxCruceMulti = k;
+          }
+          if (idxCruceMulti !== -1) {
+            const distanciaCruceMulti = roundsPlayed - idxCruceMulti;
+            if (distanciaCruceMulti === 1) {
+              secuencia.push(esUnoSolo ? `¡${nombresEnCero} al parecer le viene el zapato seguro!` : `¡${nombresEnCero} al parecer les viene el zapato seguro!`);
+            } else if (distanciaCruceMulti === 2) {
+              secuencia.push(esUnoSolo ? "Yo creo que en la próxima ronda si se lleva el zapato" : "Yo creo que en la próxima ronda si se llevan el zapato");
+            }
+          }
+        }
       }
 
       secuencia.push(fraseSale(names[nextIdx]));
