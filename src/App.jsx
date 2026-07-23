@@ -2763,6 +2763,16 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         const nextPlayer = ((roundsPlayed + 1) % roundCycle) + 1;
         const nextName = players[nextPlayer - 1] || `Jugador ${nextPlayer}`;
         secuencia.push(fraseSale(nextName));
+
+        // Quien le tocaba salir en la ronda que acaba de terminar es quien
+        // baraja para el que sale ahora (no necesariamente quien anotó).
+        const currentPlayer = (roundsPlayed % roundCycle) + 1;
+        const currentName = players[currentPlayer - 1] || `Jugador ${currentPlayer}`;
+        const frasesBarajea = [
+          `Barajéa ${currentName}`,
+          `A ${currentName} le toca mover las piedras`,
+        ];
+        secuencia.push(frasesBarajea[pickVaried('barajea', frasesBarajea.length)]);
       }
 
       setTimeout(() => speakSequence(secuencia), 800);
@@ -3996,6 +4006,15 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       }
 
       secuencia.push(fraseSale(names[nextIdx]));
+
+      // Quien le tocaba salir en la ronda que acaba de terminar es quien
+      // baraja para el que sale ahora (no necesariamente quien anotó).
+      const currentIdx = roundsPlayed % n;
+      const frasesBarajeaMulti = [
+        `Barajéa ${names[currentIdx]}`,
+        `A ${names[currentIdx]} le toca mover las piedras`,
+      ];
+      secuencia.push(frasesBarajeaMulti[pickVaried('barajeaMulti', frasesBarajeaMulti.length)]);
 
       setTimeout(() => speakSequence(secuencia), 800);
     }
