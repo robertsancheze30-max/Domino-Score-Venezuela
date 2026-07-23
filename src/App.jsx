@@ -2653,7 +2653,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const halfMetaFloor = Math.floor(meta / 2);
       const halfMetaCeil = Math.ceil(meta / 2);
       if (newScores[i] === halfMetaFloor || newScores[i] === halfMetaCeil) {
-        secuencia.push(`Vamos a la mitad del camino, ${names[i]} con ${newScores[i]}`);
+        secuencia.push(`Vamos a la mitad del camino`);
       }
 
       // Marcador parejo: diferencia de 5 puntos o menos entre los dos equipos/jugadores
@@ -3816,7 +3816,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       const halfMetaMultiFloor = Math.floor(meta / 2);
       const halfMetaMultiCeil = Math.ceil(meta / 2);
       if (newScores[i] === halfMetaMultiFloor || newScores[i] === halfMetaMultiCeil) {
-        secuencia.push(`Vamos a la mitad del camino, ${names[i]} con ${newScores[i]}`);
+        secuencia.push(`Vamos a la mitad del camino`);
       }
 
       // Se dice solo cuando TODOS los jugadores están a 5 puntos o menos de ganar
