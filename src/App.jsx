@@ -97,7 +97,8 @@ const _audioCache = new Map();
 const TTS_NAME_FIXES = {
   "marlene": "Marléne",
   "guillermo": "Guiyermo",
-  "rayó": "Ra-yó",
+  "llorar": "yorar",
+  "ángel": "Anhel",
 };
 function ttsSafeText(text) {
   if (!text) return text;
