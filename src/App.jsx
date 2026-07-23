@@ -247,7 +247,7 @@ const pickVaried = (poolKey, total) => {
 };
 
 const getAudioCtx = () => {
-  if (!_ctx) {
+  if (!_ctx || _ctx.state === "closed") {
     _ctx = new (window.AudioContext || window.webkitAudioContext)();
   }
   if (_ctx.state === "suspended") {
@@ -258,6 +258,17 @@ const getAudioCtx = () => {
   }
   return _ctx;
 };
+
+// iOS puede suspender (o incluso cerrar) el AudioContext cuando la app pasa a
+// segundo plano. Al volver a primer plano, lo revivimos (o recreamos) de una vez,
+// sin esperar a que el usuario toque algo primero.
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      try { getAudioCtx(); } catch (e) {}
+    }
+  });
+}
 
 // Nodo de ganancia maestro: todos los efectos de sonido (oscilador/ruido) se conectan
 // aquí en vez de directo a ctx.destination, así el slider de volumen y el mute
