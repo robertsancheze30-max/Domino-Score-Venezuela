@@ -2451,10 +2451,10 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
   const frasesZapato = (ganador, perdedor, plural = false) => {
     const f = plural ? [
       ganador + " ganaron! Y " + perdedor + " se llevaron el zapato. Cero puntos! Qué malos! Les toca brindar las cervezas" + chamo(true),
-      "Qué paliza! " + ganador + " arrasaron. " + perdedor + " se fueron con el zapato puesto. Qué malos! Les toca brindar las cervezas" + vale(),
+      "Qué paliza! " + ganador + " arrasaron. " + perdedor + " se fueron con el zapato puesto y vale doble. Que brinden las cervezas" + vale(),
     ] : [
       ganador + " ganó! Y " + perdedor + " se llevó el zapato. Cero puntos! Qué malo! Le toca brindar las cervezas" + chamo(false),
-      "Qué paliza! " + ganador + " arrasó. " + perdedor + " se fue con el zapato puesto. Qué malo! Le toca brindar las cervezas" + vale(),
+      "Qué paliza! " + ganador + " arrasó. " + perdedor + " se fue con el zapato puesto y vale doble. Que brinde las cervezas" + vale(),
     ];
     return f[pickVaried('zapato', f.length)];
   };
@@ -2547,7 +2547,18 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const loserLossCount = roundCycle === 4 ? updated.filter(m => m.loserPairKey === loserPairKey).length : 0;
       const esSegundaDerrota = loserLossCount >= 2;
       const numeroEnPalabras = { 2: "dos", 3: "tres", 4: "cuatro", 5: "cinco", 6: "seis", 7: "siete", 8: "ocho", 9: "nueve", 10: "diez" };
-      const fraseDerrotas = `${names[loser]} ya llevan ${numeroEnPalabras[loserLossCount] || loserLossCount} partidas perdidas, son unos málos!`;
+      // Ciclo de 4 frases que arranca en la 2da derrota y se repite indefinidamente:
+      // 2=genérica, 3=locos, 4=no ganan ni haciendo trampa, 5=no divierten...
+      // 6=genérica otra vez, 7=locos, 8=no ganan..., 9=no divierten..., 10=genérica, etc.
+      const cicloDerrotas = [
+        () => `${names[loser]} ya llevan ${numeroEnPalabras[loserLossCount] || loserLossCount} partidas perdidas, son unos málos!`,
+        () => `${names[loser]} ya llevan ${numeroEnPalabras[loserLossCount] || loserLossCount} partidas perdidas, son unos locos jugando dominó`,
+        () => `Estos perdedores no ganan ni haciendo trampa.. ya llevan ${loserLossCount} derrotas`,
+        () => `${names[loser]} no divierten.. ya tienen ${loserLossCount} partidas y no ven luz.. Retírense!`,
+      ];
+      const fraseDerrotas = loserLossCount >= 2
+        ? cicloDerrotas[(loserLossCount - 2) % 4]()
+        : "";
 
       // Memoria: en modo 2v2, racha de victorias CONSECUTIVAS de esta misma pareja
       // (en cualquiera de los dos equipos). Se corta si esa pareja pierde una partida.
@@ -2584,7 +2595,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         const secuenciaGanador = [];
         if (ganoJusto) secuenciaGanador.push(fraseGanoJusto(pts, roundCycle === 4));
         if (fraseRachaGanadora) secuenciaGanador.push(fraseRachaGanadora);
-        if (huboRemontada) secuenciaGanador.push(`¡Qué manera de remontar! Nadie daba un Bolívar por ${names[newWinner]}`);
+        if (huboRemontada) secuenciaGanador.push(`¡Qué manera de remontar! Nadie daba un Bolívar por ${roundCycle === 4 ? "ellos" : "él"}`);
         if (esPrimeraVezQueGana) secuenciaGanador.push(roundCycle === 4 ? "Coño, por fin ganaron una!" : "Coño, por fin ganó una!");
         secuenciaGanador.push(frasesGanador(names[newWinner], newScores[newWinner], roundCycle === 4, excesoSobreMeta));
         secuenciaGanador.push(frasesPerdedor(names[loser], roundCycle === 4));
@@ -2622,7 +2633,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       } else if (restanteJugadorActual === 3) {
         secuencia.push(plural2v2 ? "Que cagada, les faltaron 3 puntos para ganar" : "Que cagada, te faltaron 3 puntos para ganar");
       } else if (restanteJugadorActual === 2) {
-        secuencia.push(plural2v2 ? "Que cagada, les faltaron 2 puntos para ganar" : "Que cagada, te faltaron 2 puntos para ganar");
+        secuencia.push(plural2v2 ? "¡GUÁÁO!.. por 2 puntos no ganan la partida" : "¡GUÁÁO!.. por 2 puntos no gana la partida");
       } else if (restanteJugadorActual === 1) {
         secuencia.push(plural2v2 ? "Que cagada, les faltó un pelo e' culo para ganar" : "Que cagada, te faltó un pelo e' culo para ganar");
       }
@@ -3785,7 +3796,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       } else if (restanteJugadorActual === 3) {
         secuencia.push("Que cagada, te faltaron 3 puntos para ganar");
       } else if (restanteJugadorActual === 2) {
-        secuencia.push("Que cagada, te faltaron 2 puntos para ganar");
+        secuencia.push("¡GUÁÁO!.. por 2 puntos no gana la partida");
       } else if (restanteJugadorActual === 1) {
         secuencia.push("Que cagada, te faltó un pelo e' culo para ganar");
       }
