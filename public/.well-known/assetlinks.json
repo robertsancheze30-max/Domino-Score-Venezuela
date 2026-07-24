@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.robertsancheze.dominoscorevenezuela",
+    "sha256_cert_fingerprints": ["41:A1:AB:17:2E:6A:0D:F3:43:12:10:AF:83:A6:DE:E6:5D:27:3E:27:FF:2E:3F:9D:5B:62:74:4F:05:73:11:9E"]
+  }
+}]
