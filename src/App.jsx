@@ -4723,11 +4723,7 @@ export default function App() {
   useEffect(() => {
     if (!audioUnlocked || welcomeSpokenRef.current) return;
     welcomeSpokenRef.current = true;
-    const hora = new Date().getHours();
-    const saludo = (hora >= 6 && hora < 12) ? "Buenos días"
-      : (hora >= 12 && hora < 19) ? "Buenas tardes"
-      : "Buenas noches";
-    elevenSpeak(`¡${saludo}... bienvenidos a Dominó Score Venezuela!`);
+    elevenSpeak("¡Bienvenidos... a Dominó Score Venezuela!");
   }, [audioUnlocked]);
 
   if (loading) return (
