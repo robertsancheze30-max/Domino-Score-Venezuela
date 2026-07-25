@@ -257,26 +257,33 @@ const fraseSale = (nombre) => {
   return f[pickVaried('sale', f.length)];
 };
 
+// Marca si la app estuvo en segundo plano y el AudioContext podría haber
+// quedado "atascado" (iOS a veces lo suspende de forma que ya no reacciona
+// a resume(), incluso sin lanzar ningún error). En vez de intentar revivir
+// el mismo contexto, lo recreamos por completo en el próximo toque real.
+let _ctxNeedsRefresh = false;
+
 const getAudioCtx = () => {
-  if (!_ctx || _ctx.state === "closed") {
+  if (!_ctx || _ctx.state === "closed" || _ctxNeedsRefresh) {
+    try { if (_ctx && _ctx.state !== "closed") _ctx.close(); } catch (e) {}
     _ctx = new (window.AudioContext || window.webkitAudioContext)();
+    _masterGain = null; // se recrea también el nodo maestro para el nuevo contexto
+    _ctxNeedsRefresh = false;
   }
-  if (_ctx.state === "suspended") {
-    _ctx.resume();
-  }
-  if (_ctx.state === "interrupted") {
+  if (_ctx.state === "suspended" || _ctx.state === "interrupted") {
     _ctx.resume();
   }
   return _ctx;
 };
 
-// iOS puede suspender (o incluso cerrar) el AudioContext cuando la app pasa a
-// segundo plano. Al volver a primer plano, lo revivimos (o recreamos) de una vez,
-// sin esperar a que el usuario toque algo primero.
+// Cuando la app pasa a segundo plano, solo dejamos la señal de que hay que
+// refrescar el audio. La recreación real ocurre en getAudioCtx(), llamada
+// desde un toque real del usuario (los botones de la app), que es el único
+// momento en que iOS permite reactivar audio de forma confiable.
 if (typeof document !== "undefined") {
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
-      try { getAudioCtx(); } catch (e) {}
+    if (document.visibilityState === "hidden") {
+      _ctxNeedsRefresh = true;
     }
   });
 }
