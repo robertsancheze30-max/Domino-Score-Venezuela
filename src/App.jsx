@@ -323,7 +323,7 @@ const playRealisticKeyClick = () => {
     bandpass.Q.setValueAtTime(1.2, now);
 
     const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.5, now);
+    noiseGain.gain.setValueAtTime(0.2, now);
     noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
 
     noise.connect(bandpass); bandpass.connect(noiseGain); noiseGain.connect(getMasterGain(ctx));
@@ -335,7 +335,7 @@ const playRealisticKeyClick = () => {
     thock.type = "sine";
     thock.frequency.setValueAtTime(150 + Math.random() * 25, now);
     thock.frequency.exponentialRampToValueAtTime(85, now + 0.04);
-    thockGain.gain.setValueAtTime(0.13, now);
+    thockGain.gain.setValueAtTime(0.05, now);
     thockGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
     thock.connect(thockGain); thockGain.connect(getMasterGain(ctx));
     thock.start(now); thock.stop(now + 0.05);
@@ -363,7 +363,7 @@ const playDominoClack = () => {
     bandpass.frequency.setValueAtTime(3500, now);
     bandpass.Q.setValueAtTime(0.9, now);
     const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.7, now);
+    noiseGain.gain.setValueAtTime(0.2, now);
     noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
     noise.connect(bandpass); bandpass.connect(noiseGain); noiseGain.connect(getMasterGain(ctx));
     noise.start(now); noise.stop(now + 0.02);
@@ -374,7 +374,7 @@ const playDominoClack = () => {
     body.type = "triangle";
     body.frequency.setValueAtTime(220, now);
     body.frequency.exponentialRampToValueAtTime(110, now + 0.05);
-    bodyGain.gain.setValueAtTime(0.45, now);
+    bodyGain.gain.setValueAtTime(0.13, now);
     bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
     body.connect(bodyGain); bodyGain.connect(getMasterGain(ctx));
     body.start(now); body.stop(now + 0.07);
@@ -396,7 +396,7 @@ const playDominoClack = () => {
         bandpass2.type = "bandpass";
         bandpass2.frequency.setValueAtTime(2800, t);
         const noiseGain2 = ctx2.createGain();
-        noiseGain2.gain.setValueAtTime(0.15, t);
+        noiseGain2.gain.setValueAtTime(0.04, t);
         noiseGain2.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
         noise2.connect(bandpass2); bandpass2.connect(noiseGain2); noiseGain2.connect(getMasterGain(ctx2));
         noise2.start(t); noise2.stop(t + 0.015);
@@ -414,7 +414,7 @@ const playBeep = (freq, type, duration, volume) => {
     osc.connect(gain); gain.connect(getMasterGain(ctx));
     osc.type = type || "sine";
     osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(volume || 0.18, ctx.currentTime);
+    gain.gain.setValueAtTime(volume || 0.2, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + duration);
@@ -646,7 +646,7 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
         osc.connect(gain); gain.connect(getMasterGain(ctx));
         osc.type = "sine";
         osc.frequency.setValueAtTime(520 + i * 260, ctx.currentTime + delay);
-        gain.gain.setValueAtTime(0.18, ctx.currentTime + delay);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.12);
         osc.start(ctx.currentTime + delay);
         osc.stop(ctx.currentTime + delay + 0.12);
@@ -658,17 +658,21 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
     if (announcerSettings.muted) return;
     try {
       const ctx = getAudioCtx();
-      [0, 0.1, 0.2, 0.32].forEach((delay, i) => {
+      const now = ctx.currentTime;
+
+      // Power-up de videojuego: 5 notas ascendentes tipo arcade
+      const notes = [523, 659, 784, 1047, 1319];
+      notes.forEach((freq, i) => {
+        const t = now + i * 0.055;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.exponentialRampToValueAtTime(0.2, t + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
         osc.connect(gain); gain.connect(getMasterGain(ctx));
-        osc.type = i === 3 ? "square" : "triangle";
-        const freqs = [330, 440, 550, 880];
-        osc.frequency.setValueAtTime(freqs[i], ctx.currentTime + delay);
-        gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + (i === 3 ? 0.3 : 0.1));
-        osc.start(ctx.currentTime + delay);
-        osc.stop(ctx.currentTime + delay + (i === 3 ? 0.3 : 0.12));
+        osc.start(t); osc.stop(t + 0.16);
       });
     } catch(e) {}
   };
@@ -950,7 +954,7 @@ function Setup1v1Screen({ onStart, onBack, isPro, colorTheme }) {
         osc.connect(gain); gain.connect(getMasterGain(ctx));
         osc.type = "sine";
         osc.frequency.setValueAtTime(520 + i * 260, ctx.currentTime + delay);
-        gain.gain.setValueAtTime(0.18, ctx.currentTime + delay);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.12);
         osc.start(ctx.currentTime + delay);
         osc.stop(ctx.currentTime + delay + 0.12);
@@ -962,17 +966,21 @@ function Setup1v1Screen({ onStart, onBack, isPro, colorTheme }) {
     if (announcerSettings.muted) return;
     try {
       const ctx = getAudioCtx();
-      [0, 0.1, 0.2, 0.32].forEach((delay, i) => {
+      const now = ctx.currentTime;
+
+      // Power-up de videojuego: 5 notas ascendentes tipo arcade
+      const notes = [523, 659, 784, 1047, 1319];
+      notes.forEach((freq, i) => {
+        const t = now + i * 0.055;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.exponentialRampToValueAtTime(0.2, t + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
         osc.connect(gain); gain.connect(getMasterGain(ctx));
-        osc.type = i === 3 ? "square" : "triangle";
-        const freqs = [330, 440, 550, 880];
-        osc.frequency.setValueAtTime(freqs[i], ctx.currentTime + delay);
-        gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + (i === 3 ? 0.3 : 0.1));
-        osc.start(ctx.currentTime + delay);
-        osc.stop(ctx.currentTime + delay + (i === 3 ? 0.3 : 0.12));
+        osc.start(t); osc.stop(t + 0.16);
       });
     } catch(e) {}
   };
@@ -1217,7 +1225,7 @@ function Setup3pScreen({ onStart, onBack, isPro, colorTheme }) {
         osc.connect(gain); gain.connect(getMasterGain(ctx));
         osc.type = "sine";
         osc.frequency.setValueAtTime(520 + i * 260, ctx.currentTime + delay);
-        gain.gain.setValueAtTime(0.18, ctx.currentTime + delay);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.12);
         osc.start(ctx.currentTime + delay);
         osc.stop(ctx.currentTime + delay + 0.12);
@@ -1229,17 +1237,21 @@ function Setup3pScreen({ onStart, onBack, isPro, colorTheme }) {
     if (announcerSettings.muted) return;
     try {
       const ctx = getAudioCtx();
-      [0, 0.1, 0.2, 0.32].forEach((delay, i) => {
+      const now = ctx.currentTime;
+
+      // Power-up de videojuego: 5 notas ascendentes tipo arcade
+      const notes = [523, 659, 784, 1047, 1319];
+      notes.forEach((freq, i) => {
+        const t = now + i * 0.055;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.exponentialRampToValueAtTime(0.2, t + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
         osc.connect(gain); gain.connect(getMasterGain(ctx));
-        osc.type = i === 3 ? "square" : "triangle";
-        const freqs = [330, 440, 550, 880];
-        osc.frequency.setValueAtTime(freqs[i], ctx.currentTime + delay);
-        gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + (i === 3 ? 0.3 : 0.1));
-        osc.start(ctx.currentTime + delay);
-        osc.stop(ctx.currentTime + delay + (i === 3 ? 0.3 : 0.12));
+        osc.start(t); osc.stop(t + 0.16);
       });
     } catch(e) {}
   };
@@ -1456,7 +1468,7 @@ function Setup4pScreen({ onStart, onBack, isPro, colorTheme }) {
         osc.connect(gain); gain.connect(getMasterGain(ctx));
         osc.type = "sine";
         osc.frequency.setValueAtTime(520 + i * 260, ctx.currentTime + delay);
-        gain.gain.setValueAtTime(0.18, ctx.currentTime + delay);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.12);
         osc.start(ctx.currentTime + delay);
         osc.stop(ctx.currentTime + delay + 0.12);
@@ -1468,17 +1480,21 @@ function Setup4pScreen({ onStart, onBack, isPro, colorTheme }) {
     if (announcerSettings.muted) return;
     try {
       const ctx = getAudioCtx();
-      [0, 0.1, 0.2, 0.32].forEach((delay, i) => {
+      const now = ctx.currentTime;
+
+      // Power-up de videojuego: 5 notas ascendentes tipo arcade
+      const notes = [523, 659, 784, 1047, 1319];
+      notes.forEach((freq, i) => {
+        const t = now + i * 0.055;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.exponentialRampToValueAtTime(0.2, t + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
         osc.connect(gain); gain.connect(getMasterGain(ctx));
-        osc.type = i === 3 ? "square" : "triangle";
-        const freqs = [330, 440, 550, 880];
-        osc.frequency.setValueAtTime(freqs[i], ctx.currentTime + delay);
-        gain.gain.setValueAtTime(0.2, ctx.currentTime + delay);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + (i === 3 ? 0.3 : 0.1));
-        osc.start(ctx.currentTime + delay);
-        osc.stop(ctx.currentTime + delay + (i === 3 ? 0.3 : 0.12));
+        osc.start(t); osc.stop(t + 0.16);
       });
     } catch(e) {}
   };
@@ -2327,7 +2343,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       if (type === "point") {
         osc.frequency.setValueAtTime(520, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
         osc.start(); osc.stop(ctx.currentTime + 0.2);
       } else if (type === "tie") {
@@ -2347,7 +2363,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           o.frequency.value = freq;
           const t = ctx.currentTime + idx * 0.13;
           const dur = idx === melody.length - 1 ? 0.5 : 0.16;
-          g.gain.setValueAtTime(0.28, t);
+          g.gain.setValueAtTime(0.2, t);
           g.gain.exponentialRampToValueAtTime(0.001, t + dur);
           o.start(t); o.stop(t + dur);
         });
@@ -2359,7 +2375,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           o.frequency.value = freq;
           const t = ctx.currentTime + 0.55;
           g.gain.setValueAtTime(0.0001, t);
-          g.gain.linearRampToValueAtTime(0.18, t + 0.05);
+          g.gain.linearRampToValueAtTime(0.13, t + 0.05);
           g.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
           o.start(t); o.stop(t + 0.9);
         });
@@ -2372,7 +2388,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
               o.connect(g); g.connect(getMasterGain(ctx2));
               o.type = "square";
               o.frequency.value = freq;
-              g.gain.setValueAtTime(0.22, ctx2.currentTime);
+              g.gain.setValueAtTime(0.16, ctx2.currentTime);
               g.gain.exponentialRampToValueAtTime(0.001, ctx2.currentTime + 0.35);
               o.start(); o.stop(ctx2.currentTime + 0.35);
             });
@@ -2382,7 +2398,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         osc.type = "sawtooth";
         osc.frequency.setValueAtTime(200, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.4);
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
         osc.start(); osc.stop(ctx.currentTime + 0.4);
       }
@@ -2510,7 +2526,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       osc.type = "square";
       osc.frequency.setValueAtTime(600 + Math.random() * 200, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.05);
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
       osc.connect(gain); gain.connect(getMasterGain(ctx));
       osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.06);
@@ -3754,7 +3770,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       osc.type = "square";
       osc.frequency.setValueAtTime(600 + Math.random() * 200, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.05);
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
       osc.connect(gain); gain.connect(getMasterGain(ctx));
       osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.06);
@@ -3771,7 +3787,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       if (type === "point") {
         osc.frequency.setValueAtTime(520, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.12);
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
         osc.start(); osc.stop(ctx.currentTime + 0.2);
       } else if (type === "win") {
@@ -3779,7 +3795,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           const o = ctx.createOscillator(); const g = ctx.createGain();
           o.connect(g); g.connect(getMasterGain(ctx));
           o.frequency.value = freq;
-          g.gain.setValueAtTime(0.25, ctx.currentTime + idx * 0.12);
+          g.gain.setValueAtTime(0.2, ctx.currentTime + idx * 0.12);
           g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.12 + 0.25);
           o.start(ctx.currentTime + idx * 0.12); o.stop(ctx.currentTime + idx * 0.12 + 0.25);
         });
