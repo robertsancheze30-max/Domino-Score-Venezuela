@@ -4661,6 +4661,23 @@ function WelcomeScreen({ onContinue }) {
   );
 }
 
+// Envoltorio simple que aplica un fundido (fade) suave cada vez que cambia
+// de pantalla. Se apoya en la prop "screenKey": cuando cambia, React
+// desmonta/monta el div y dispara la animación de entrada de nuevo.
+function ScreenTransition({ screenKey, children }) {
+  return (
+    <div key={screenKey} style={{ animation: "screenFadeIn 0.35s ease-out" }}>
+      <style>{`
+        @keyframes screenFadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+      {children}
+    </div>
+  );
+}
+
 export default function App() {
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -4757,11 +4774,12 @@ export default function App() {
 
   if (showWelcome) return <WelcomeScreen onContinue={() => setShowWelcome(false)} />;
 
-  if (!mode) return <ModeMenuScreen onSelectMode={(m) => setMode(m)} audioUnlocked={audioUnlocked} isPro={isPro} onUnlockPro={unlockPro} colorTheme={colorTheme} onChangeColorTheme={changeColorTheme} />;
+  if (!mode) return <ScreenTransition screenKey="menu"><ModeMenuScreen onSelectMode={(m) => setMode(m)} audioUnlocked={audioUnlocked} isPro={isPro} onUnlockPro={unlockPro} colorTheme={colorTheme} onChangeColorTheme={changeColorTheme} /></ScreenTransition>;
 
   if (mode === "equipos") {
-    if (!game) return <SetupScreen onStart={(t1, t2, meta, players) => { setMatchStreak({ revanchaCount: 0, winners: [] }); setGame({ t1, t2, meta, players, resume: null }); }} onBack={() => setMode(null)} isPro={isPro} colorTheme={colorTheme} />;
+    if (!game) return <ScreenTransition screenKey="setup-equipos"><SetupScreen onStart={(t1, t2, meta, players) => { setMatchStreak({ revanchaCount: 0, winners: [] }); setGame({ t1, t2, meta, players, resume: null }); }} onBack={() => setMode(null)} isPro={isPro} colorTheme={colorTheme} /></ScreenTransition>;
     return (
+      <ScreenTransition screenKey="game-equipos">
       <GameScreen
         team1={game.t1} team2={game.t2} meta={game.meta}
         initialState={game.resume}
@@ -4775,12 +4793,14 @@ export default function App() {
         onReset={() => { setGame(null); setMode(null); setMatchStreak({ revanchaCount: 0, winners: [] }); }}
         onRevanche={() => { setMatchStreak(prev => ({ ...prev, revanchaCount: prev.revanchaCount + 1 })); setGame({ t1: game.t1, t2: game.t2, meta: game.meta, players: game.players, resume: null }); }}
       />
+      </ScreenTransition>
     );
   }
 
   if (mode === "1v1") {
-    if (!game) return <Setup1v1Screen onStart={(p1, p2, meta) => { setMatchStreak({ revanchaCount: 0, winners: [] }); setGame({ t1: p1, t2: p2, meta, players: [p1, p2], isRevancha: false, resume: null }); }} onBack={() => setMode(null)} isPro={isPro} colorTheme={colorTheme} />;
+    if (!game) return <ScreenTransition screenKey="setup-1v1"><Setup1v1Screen onStart={(p1, p2, meta) => { setMatchStreak({ revanchaCount: 0, winners: [] }); setGame({ t1: p1, t2: p2, meta, players: [p1, p2], isRevancha: false, resume: null }); }} onBack={() => setMode(null)} isPro={isPro} colorTheme={colorTheme} /></ScreenTransition>;
     return (
+      <ScreenTransition screenKey={`game-1v1-${revanchaKey}`}>
       <GameScreen
         key={revanchaKey}
         team1={game.t1} team2={game.t2} meta={game.meta}
@@ -4797,14 +4817,16 @@ export default function App() {
         onReset={() => { setGame(null); setMode(null); setMatchStreak({ revanchaCount: 0, winners: [] }); }}
         onRevanche={() => { setRevanchaKey(k => k + 1); setMatchStreak(prev => ({ ...prev, revanchaCount: prev.revanchaCount + 1 })); setGame({ t1: game.t1, t2: game.t2, meta: game.meta, players: game.players, isRevancha: true, resume: null }); }}
       />
+      </ScreenTransition>
     );
   }
 
   if (mode === "3p") {
-    if (!game) return <Setup3pScreen onStart={(names, meta) => setGame({ names, meta, revancha: false })} onBack={() => setMode(null)} isPro={isPro} colorTheme={colorTheme} />;
+    if (!game) return <ScreenTransition screenKey="setup-3p"><Setup3pScreen onStart={(names, meta) => setGame({ names, meta, revancha: false })} onBack={() => setMode(null)} isPro={isPro} colorTheme={colorTheme} /></ScreenTransition>;
     const savedNames3 = game.names;
     const savedMeta3 = game.meta;
     return (
+      <ScreenTransition screenKey={`game-3p-${revanchaKey}`}>
       <GameMultiScreen
         key={revanchaKey}
         playerNames={savedNames3} meta={savedMeta3}
@@ -4815,14 +4837,16 @@ export default function App() {
         onReset={() => { setGame(null); setMode(null); }}
         onRevanche={() => { setRevanchaKey(k => k + 1); setGame({ names: savedNames3, meta: savedMeta3, revancha: true }); }}
       />
+      </ScreenTransition>
     );
   }
 
   if (mode === "4p") {
-    if (!game) return <Setup4pScreen onStart={(names, meta) => setGame({ names, meta, revancha: false })} onBack={() => setMode(null)} isPro={isPro} colorTheme={colorTheme} />;
+    if (!game) return <ScreenTransition screenKey="setup-4p"><Setup4pScreen onStart={(names, meta) => setGame({ names, meta, revancha: false })} onBack={() => setMode(null)} isPro={isPro} colorTheme={colorTheme} /></ScreenTransition>;
     const savedNames4 = game.names;
     const savedMeta4 = game.meta;
     return (
+      <ScreenTransition screenKey={`game-4p-${revanchaKey}`}>
       <GameMultiScreen
         key={revanchaKey}
         playerNames={savedNames4} meta={savedMeta4}
@@ -4833,6 +4857,7 @@ export default function App() {
         onReset={() => { setGame(null); setMode(null); }}
         onRevanche={() => { setRevanchaKey(k => k + 1); setGame({ names: savedNames4, meta: savedMeta4, revancha: true }); }}
       />
+      </ScreenTransition>
     );
   }
 
