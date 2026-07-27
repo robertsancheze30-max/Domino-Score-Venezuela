@@ -2658,6 +2658,20 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const fraseRonda = pts <= 7 ? frasesPocoPuntaje(names[i], pts, plural) : frasesPunto(names[i], pts, newScores[i], plural);
       const secuencia = [];
 
+      // Frases especiales de total EXACTO acumulado (11, 13 o 33 puntos): cuando
+      // se cumplen, son las ÚNICAS que suenan esa ronda, nada más se agrega.
+      const fraseExacta11o13 = newScores[i] === 11
+        ? `${plural ? `${names[i]} llegaron` : `${names[i]} llegó`} a 11... ¡CHÚPALO ENTONCES!`
+        : newScores[i] === 13
+        ? `${plural ? `${names[i]} llegaron` : `${names[i]} llegó`} a 13... ¡MÁS ME CRECE!`
+        : newScores[i] === 33
+        ? `¡OK!... ¡LA EDAD DE CRISTO!... ${plural ? `${names[i]} llegaron` : `${names[i]} llegó`} a los 33 puntos`
+        : null;
+
+      if (fraseExacta11o13) {
+        secuencia.push(fraseExacta11o13);
+      } else {
+
       // Se salvó del zapato: anotó por primera vez justo cuando el otro ya
       // estaba en la zona de "huele a zapato" (mismo umbral según la meta).
       // Va PRIMERO que todo lo demás, apenas se presiona sumar.
@@ -2782,6 +2796,8 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           }
         }
       }
+
+      } // cierre del else de fraseExacta11o13
 
       if (roundsPlayed >= 0) {
         const nextPlayer = ((roundsPlayed + 1) % roundCycle) + 1;
@@ -3901,6 +3917,20 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       const eraPrimero = scores[i] === 0 && history.some(r => !r.tie && r.playerIdx !== i);
       const secuencia = [];
 
+      // Frases especiales de total EXACTO acumulado (11, 13 o 33 puntos): cuando
+      // se cumplen, son las ÚNICAS que suenan esa ronda, nada más se agrega.
+      const fraseExacta11o13Multi = newScores[i] === 11
+        ? `${names[i]} llegó a 11... ¡CHÚPALO ENTONCES!`
+        : newScores[i] === 13
+        ? `${names[i]} llegó a 13... ¡MÁS ME CRECE!`
+        : newScores[i] === 33
+        ? `¡OK!... ¡LA EDAD DE CRISTO!... ${names[i]} llegó a los 33 puntos`
+        : null;
+
+      if (fraseExacta11o13Multi) {
+        secuencia.push(fraseExacta11o13Multi);
+      } else {
+
       // Se salvó del zapato: anotó por primera vez justo cuando algún otro
       // jugador ya estaba en la zona de "huele a zapato" (mismo umbral según la meta).
       // Va PRIMERO que todo lo demás, apenas se presiona sumar.
@@ -4028,6 +4058,8 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           }
         }
       }
+
+      } // cierre del else de fraseExacta11o13Multi
 
       secuencia.push(fraseSale(names[nextIdx]));
 
