@@ -2855,6 +2855,16 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const nextPlayer = ((roundsPlayed + 1) % roundCycle) + 1;
       const nextName = players[nextPlayer - 1] || `Jugador ${nextPlayer}`;
       secuencia.push(fraseSale(nextName));
+
+      // Quien le tocaba salir en la ronda que acaba de terminar es quien
+      // baraja para el que sale ahora (no necesariamente quien anotó).
+      const currentPlayer = (roundsPlayed % roundCycle) + 1;
+      const currentName = players[currentPlayer - 1] || `Jugador ${currentPlayer}`;
+      const frasesBarajea = [
+        `Barajéa ${currentName}`,
+        `A ${currentName} le toca mover las piedras`,
+      ];
+      secuencia.push(frasesBarajea[pickVaried('barajea', frasesBarajea.length)]);
     }
     speakSequence(secuencia);
   };
@@ -4123,18 +4133,32 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
     playSound("tie");
     // Empate específicamente en la 3ra ronda (aplica 3p y 4p) o en la 4ta
     // ronda (solo aplica en 4p, ya que en 3p no existe "Jugador 4").
-    if (roundsPlayed === 2) {
-      speak(`¡Hubo Empate!... ${names[2] || "Jugador 3"} perdió la mano por mamagüévo`);
-    } else if (roundsPlayed === 3 && n === 4) {
-      speak(`¡¡Nadie gana!!... y ${names[3] || "Jugador 4"} perdió su mano porque es una maséte loco`);
-    } else {
-      const frasesEmpateMulti = [
-        "Empate en la ronda, nadie suma",
-        "Ronda empatada, aquí no ganó nadie",
-        "Tablas esta ronda, sigan jugando",
-      ];
-      speak(frasesEmpateMulti[pickVaried('empateMulti', frasesEmpateMulti.length)]);
-    }
+    const secuencia = roundsPlayed === 2
+      ? [`¡Hubo Empate!... ${names[2] || "Jugador 3"} perdió la mano por mamagüévo`]
+      : (roundsPlayed === 3 && n === 4)
+      ? [`¡¡Nadie gana!!... y ${names[3] || "Jugador 4"} perdió su mano porque es una maséte loco`]
+      : [(() => {
+          const frasesEmpateMulti = [
+            "Empate en la ronda, nadie suma",
+            "Ronda empatada, aquí no ganó nadie",
+            "Tablas esta ronda, sigan jugando",
+          ];
+          return frasesEmpateMulti[pickVaried('empateMulti', frasesEmpateMulti.length)];
+        })()];
+
+    const nextIdx = (roundsPlayed + 1) % n;
+    secuencia.push(fraseSale(names[nextIdx]));
+
+    // Quien le tocaba salir en la ronda que acaba de terminar es quien
+    // baraja para el que sale ahora (no necesariamente quien anotó).
+    const currentIdx = roundsPlayed % n;
+    const frasesBarajeaMulti = [
+      `Barajéa ${names[currentIdx]}`,
+      `A ${names[currentIdx]} le toca mover las piedras`,
+    ];
+    secuencia.push(frasesBarajeaMulti[pickVaried('barajeaMulti', frasesBarajeaMulti.length)]);
+
+    speakSequence(secuencia);
   };
 
   const handleAskPlayer = () => {
