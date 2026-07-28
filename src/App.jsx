@@ -2701,17 +2701,24 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         rachaAnotacion++;
       }
       if (rachaAnotacion === 3) {
-        secuencia.push(plural
-          ? "Pareciera que jugaran solos porque el otro equipo no raya"
-          : "Pareciera que jugara solo porque el otro jugador no raya");
+        const frasesRachaTres = plural ? [
+          "Pareciera que jugaran solos porque el otro equipo no raya",
+          `¡Qué mala suerte tienen ${names[1 - i]}! Ya van 3 rondas sin sumar un punto`,
+        ] : [
+          "Pareciera que jugara solo porque el otro jugador no raya",
+          `¡Qué mala suerte tiene ${names[1 - i]}! Ya van 3 rondas sin sumar un punto`,
+        ];
+        secuencia.push(frasesRachaTres[pickVaried('rachaTres', frasesRachaTres.length)]);
       }
       if (rachaAnotacion === 5) {
         const fraseRachaCinco = plural ? [
           "Sin duda alguna que estos panas están jugando sólos",
           "Sin duda alguna que estos chamos están jugando sólos",
+          `Vaya racha maluca la de ${names[1 - i]}... 5 rondas sin anotar ni un punto`,
         ] : [
           "Sin duda alguna que este pana está jugando sólo",
           "Sin duda alguna que este chamo está jugando sólo",
+          `Vaya racha maluca la de ${names[1 - i]}... 5 rondas sin anotar ni un punto`,
         ];
         secuencia.push(fraseRachaCinco[pickVaried('rachaCinco', fraseRachaCinco.length)]);
       }
@@ -2857,15 +2864,24 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
     setScores(prevScores);
     setHistory(history.slice(0, -1));
     playClick();
-    speak(roundCycle === 4
-      ? "Espera, vamos a revertir ese punto" + chamo()
-      : "Espera, vamos a revertir ese punto" + chamo()
-    );
+    const frasesRevertir = [
+      "Espera, vamos a revertir ese punto" + chamo(),
+      "Ok, se cancela esa jugada" + vale(),
+      "Vamos para atrás con esa anotación" + chamo(),
+    ];
+    speak(frasesRevertir[pickVaried('revertir', frasesRevertir.length)]);
   };
 
   const handleReset = () => {
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    setLoserScore(null); setShowConfetti(false); onReset();
+    setLoserScore(null); setShowConfetti(false);
+    const frasesNuevaPartida = [
+      "¡¡¡Que empiece la próxima partida muchachos!!!",
+      "¡¡A jugar de nuevo cuerdas de malos!!",
+      "¡Vamos por otra partida mi panas!",
+    ];
+    speak(frasesNuevaPartida[pickVaried('nuevaPartida', frasesNuevaPartida.length)]);
+    onReset();
   };
 
   const handleShareResult = async () => {
@@ -3959,12 +3975,17 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         rachaAnotacionMulti++;
       }
       if (rachaAnotacionMulti === 3) {
-        secuencia.push("Pareciera que jugara solo porque los demás no rayan");
+        const frasesRachaTresMulti = [
+          "Pareciera que jugara solo porque los demás no rayan",
+          "¡Qué mala suerte tienen los demás! Ya van 3 rondas sin que nadie más sume",
+        ];
+        secuencia.push(frasesRachaTresMulti[pickVaried('rachaTresMulti', frasesRachaTresMulti.length)]);
       }
       if (rachaAnotacionMulti === 5) {
         const fraseRachaCincoMulti = [
           "Sin duda alguna que este pana está jugando sólo",
           "Sin duda alguna que este chamo está jugando sólo",
+          "Vaya racha maluca la de los demás... 5 rondas sin que nadie más anote",
         ];
         secuencia.push(fraseRachaCincoMulti[pickVaried('rachaCincoMulti', fraseRachaCincoMulti.length)]);
       }
@@ -4087,7 +4108,12 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
     setHistory([...history, { round: (roundsPlayed % n) + 1, added: Array(n).fill(0), tie: true }]);
     setInputs(Array(n).fill(""));
     playSound("tie");
-    speak("Empate en la ronda, nadie suma");
+    const frasesEmpateMulti = [
+      "Empate en la ronda, nadie suma",
+      "Ronda empatada, aquí no ganó nadie",
+      "Tablas esta ronda, sigan jugando",
+    ];
+    speak(frasesEmpateMulti[pickVaried('empateMulti', frasesEmpateMulti.length)]);
   };
 
   const handleAskPlayer = () => {
@@ -4106,10 +4132,23 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
     setScores(prevScores);
     setHistory(history.slice(0, -1));
     playClick();
-    speak("Espera, vamos a revertir ese punto");
+    const frasesRevertirMulti = [
+      "Espera, vamos a revertir ese punto",
+      "Ok, se cancela esa jugada",
+      "Vamos para atrás con esa anotación",
+    ];
+    speak(frasesRevertirMulti[pickVaried('revertirMulti', frasesRevertirMulti.length)]);
   };
 
-  const handleReset = () => { onReset(); };
+  const handleReset = () => {
+    const frasesNuevaPartidaMulti = [
+      "¡¡¡Que empiece la próxima partida muchachos!!!",
+      "¡¡A jugar de nuevo cuerdas de malos!!",
+      "¡Vamos por otra partida mi panas!",
+    ];
+    speak(frasesNuevaPartidaMulti[pickVaried('nuevaPartidaMulti', frasesNuevaPartidaMulti.length)]);
+    onReset();
+  };
   const handleRevanche = () => {
     speak("Vamos por la revancha muchachos");
     onRevanche();
