@@ -2658,14 +2658,17 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const fraseRonda = pts <= 7 ? frasesPocoPuntaje(names[i], pts, plural) : frasesPunto(names[i], pts, newScores[i], plural);
       const secuencia = [];
 
-      // Frases especiales de total EXACTO acumulado (11, 13 o 33 puntos): cuando
-      // se cumplen, son las ÚNICAS que suenan esa ronda, nada más se agrega.
+      // Frases especiales de total EXACTO acumulado (11, 13, 33, o a 4 de la
+      // meta): cuando se cumplen, son las ÚNICAS que suenan esa ronda, nada
+      // más se agrega (Sale/Barajea siguen sonando igual, fuera de este bloque).
       const fraseExacta11o13 = newScores[i] === 11
         ? `${plural ? `${names[i]} llegaron` : `${names[i]} llegó`} a 11... ¡CHÚPALO ENTONCES!`
         : newScores[i] === 13
         ? `${plural ? `${names[i]} llegaron` : `${names[i]} llegó`} a 13... ¡MÁS ME CRECE!`
         : newScores[i] === 33
         ? `¡OK!... ¡LA EDAD DE CRISTO!... ${plural ? `${names[i]} llegaron` : `${names[i]} llegó`} a los 33 puntos`
+        : newScores[i] === meta - 4
+        ? `¡CÓOÑO!... quedaron a 4 puntos para ganar... ${plural ? `${names[i]} llegaron` : `${names[i]} llegó`} a ${newScores[i]} puntos`
         : null;
 
       if (fraseExacta11o13) {
@@ -3917,14 +3920,17 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       const eraPrimero = scores[i] === 0 && history.some(r => !r.tie && r.playerIdx !== i);
       const secuencia = [];
 
-      // Frases especiales de total EXACTO acumulado (11, 13 o 33 puntos): cuando
-      // se cumplen, son las ÚNICAS que suenan esa ronda, nada más se agrega.
+      // Frases especiales de total EXACTO acumulado (11, 13, 33, o a 4 de la
+      // meta): cuando se cumplen, son las ÚNICAS que suenan esa ronda, nada
+      // más se agrega (Sale/Barajea siguen sonando igual, fuera de este bloque).
       const fraseExacta11o13Multi = newScores[i] === 11
         ? `${names[i]} llegó a 11... ¡CHÚPALO ENTONCES!`
         : newScores[i] === 13
         ? `${names[i]} llegó a 13... ¡MÁS ME CRECE!`
         : newScores[i] === 33
         ? `¡OK!... ¡LA EDAD DE CRISTO!... ${names[i]} llegó a los 33 puntos`
+        : newScores[i] === meta - 4
+        ? `¡CÓOÑO!... quedaron a 4 puntos para ganar... ${names[i]} llegó a ${newScores[i]} puntos`
         : null;
 
       if (fraseExacta11o13Multi) {
