@@ -2837,7 +2837,15 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
     setHistory([...history, { round: (roundsPlayed % roundCycle) + 1, added: [pts0, pts1], totals: [...scores], tie: true }]);
     setInputs(["", ""]);
     playSound("tie");
-    const secuencia = [frasesEmpate(pts0)];
+    // Empate específicamente en la 3ra o 4ta ronda de la partida (solo aplica
+    // en 2v2, ya que en 1v1 no existen "Jugador 3" ni "Jugador 4"): frase fija.
+    const esEmpateRonda3 = roundCycle === 4 && roundsPlayed === 2;
+    const esEmpateRonda4 = roundCycle === 4 && roundsPlayed === 3;
+    const secuencia = esEmpateRonda3
+      ? [`¡Hubo Empate!... ${players[2] || "Jugador 3"} perdió la mano por mamagüévo`]
+      : esEmpateRonda4
+      ? [`¡¡Nadie gana!!... y ${players[3] || "Jugador 4"} perdió su mano porque es una maséte loco`]
+      : [frasesEmpate(pts0)];
     if (roundsPlayed >= 0) {
       const nextPlayer = ((roundsPlayed + 1) % roundCycle) + 1;
       const nextName = players[nextPlayer - 1] || `Jugador ${nextPlayer}`;
@@ -4108,12 +4116,20 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
     setHistory([...history, { round: (roundsPlayed % n) + 1, added: Array(n).fill(0), tie: true }]);
     setInputs(Array(n).fill(""));
     playSound("tie");
-    const frasesEmpateMulti = [
-      "Empate en la ronda, nadie suma",
-      "Ronda empatada, aquí no ganó nadie",
-      "Tablas esta ronda, sigan jugando",
-    ];
-    speak(frasesEmpateMulti[pickVaried('empateMulti', frasesEmpateMulti.length)]);
+    // Empate específicamente en la 3ra ronda (aplica 3p y 4p) o en la 4ta
+    // ronda (solo aplica en 4p, ya que en 3p no existe "Jugador 4").
+    if (roundsPlayed === 2) {
+      speak(`¡Hubo Empate!... ${names[2] || "Jugador 3"} perdió la mano por mamagüévo`);
+    } else if (roundsPlayed === 3 && n === 4) {
+      speak(`¡¡Nadie gana!!... y ${names[3] || "Jugador 4"} perdió su mano porque es una maséte loco`);
+    } else {
+      const frasesEmpateMulti = [
+        "Empate en la ronda, nadie suma",
+        "Ronda empatada, aquí no ganó nadie",
+        "Tablas esta ronda, sigan jugando",
+      ];
+      speak(frasesEmpateMulti[pickVaried('empateMulti', frasesEmpateMulti.length)]);
+    }
   };
 
   const handleAskPlayer = () => {
