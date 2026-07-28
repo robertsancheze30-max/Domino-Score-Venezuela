@@ -3690,7 +3690,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           onDigit={(d) => setInputs(inputs.map((v, idx) => idx === keypadIdx ? (v + d).slice(0, 3) : v))}
           onBackspace={() => setInputs(inputs.map((v, idx) => idx === keypadIdx ? v.slice(0, -1) : v))}
           onClear={() => setInputs(inputs.map((v, idx) => idx === keypadIdx ? "" : v))}
-          onConfirm={() => { addPoints(keypadIdx); setKeypadIdx(null); }}
+          onConfirm={() => { setKeypadIdx(null); }}
           onClose={() => setKeypadIdx(null)}
         />
       )}
@@ -4701,7 +4701,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           onDigit={(d) => setInputs(inputs.map((v, idx) => idx === keypadIdx ? (v + d).slice(0, 3) : v))}
           onBackspace={() => setInputs(inputs.map((v, idx) => idx === keypadIdx ? v.slice(0, -1) : v))}
           onClear={() => setInputs(inputs.map((v, idx) => idx === keypadIdx ? "" : v))}
-          onConfirm={() => { addPoints(keypadIdx); setKeypadIdx(null); }}
+          onConfirm={() => { setKeypadIdx(null); }}
           onClose={() => setKeypadIdx(null)}
         />
       )}
