@@ -2441,7 +2441,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
   };
 
   const frasesEmpate = (pts) => {
-    if (pts === 15) return "¡¡¡NO JODA!!!… empate a 15..  sabemos quién es el más málo";
+    if (pts === 15) return "¡¡¡NO JODA!!!… empate a 15..  NO sabemos quién es el más málo";
     if (pts === 19) return "Empataron a 19.. el culo se les mueve";
     if (pts === 22) return "¡¡¡MIÉRDA!!!.. agarraron 22 puntos cada equipo, nadie suma";
     if (pts === 25) return "Quedaron tablas con 25.. el culo te lo jínco";
