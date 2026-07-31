@@ -2410,13 +2410,11 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
   const frasesPocoPuntaje = (nombre, pts, plural = false) => {
     const f = plural ? [
-      "Es mejor coger " + pts + " que " + pts + " cojan a uno. " + nombre + " anotaron " + pts + " puntos" + chamo(true),
-      "Algo es algo. " + nombre + " se llevaron " + pts + " puntitos. Es mejor coger " + pts + " que " + pts + " cojan a uno" + vale(),
-      "Ok, " + nombre + " agarraron " + pts + " puntos",
+      nombre + " agarraron " + pts + ". Es mejor coger " + pts + " que " + pts + " cojan a uno" + chamo(true),
+      "Algo es algo, peor es nada. " + nombre + " se llevaron " + pts + " puntitos" + vale(),
     ] : [
-      "Es mejor coger " + pts + " que " + pts + " cojan a uno. " + nombre + " anotó " + pts + " puntos" + chamo(false),
-      "Algo es algo. " + nombre + " se llevó " + pts + " puntitos. Es mejor coger " + pts + " que " + pts + " cojan a uno" + vale(),
-      "Ok, " + nombre + " agarró " + pts + " puntos",
+      nombre + " agarró " + pts + ". Es mejor coger " + pts + " que " + pts + " cojan a uno" + chamo(false),
+      "Algo es algo, peor es nada. " + nombre + " se llevó " + pts + " puntitos" + vale(),
     ];
     return f[pickVaried('pocoPuntaje', f.length)];
   };
@@ -2429,6 +2427,10 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "Ahí están! " + nombre + " con " + pts + " puntos. Acumulan " + total + vale(),
       "Ok, " + nombre + " agarraron " + pts + " puntos",
       "Muchachos.. " + nombre + " ganaron la mano con " + pts + " puntos",
+      "¡Listo! " + nombre + " agarraron " + pts + " puntos pol pecho",
+      "Esta mano.. " + nombre + " rayaron con " + pts + " puntos!",
+      "¡QUÉ NIVEL! " + pts + " puntos para " + nombre,
+      "¡Excelente!.. esta ronda la ganaron " + nombre + " con " + pts + " puntos",
     ] : [
       "Muy bien! " + nombre + " anotó " + pts + " puntos. Lleva " + total + " en total" + chamo(false),
       "Así se juega! " + nombre + " suma " + pts + ". Acumula " + total + " puntos" + vale(),
@@ -2436,16 +2438,15 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "Ahí está! " + nombre + " con " + pts + " puntos. Lleva " + total + " acumulado" + vale(),
       "Ok, " + nombre + " agarró " + pts + " puntos",
       "Muchachos.. " + nombre + " ganó la mano con " + pts + " puntos",
+      "¡Listo! " + nombre + " agarró " + pts + " puntos pol pecho",
+      "Esta mano.. " + nombre + " rayó con " + pts + " puntos!",
+      "¡QUÉ NIVEL! " + pts + " puntos para " + nombre,
+      "¡Excelente!.. esta ronda la ganó " + nombre + " con " + pts + " puntos",
     ];
     return f[pickVaried('puntoNormal', f.length)];
   };
 
   const frasesEmpate = (pts) => {
-    if (pts === 15) return "¡¡¡NO JODA!!!… empate a 15..  NO sabemos quién es el más málo";
-    if (pts === 19) return "Empataron a 19.. el culo se les mueve";
-    if (pts === 22) return "¡¡¡MIÉRDA!!!.. agarraron 22 puntos cada equipo, nadie suma";
-    if (pts === 25) return "Quedaron tablas con 25.. el culo te lo jínco";
-    if (pts === 27) return "¡¡¡TANTA VAINA PARA QUEDAR EMPATADOS CON 27 CADA UNO!!!";
     const f = [
       "Empate! " + pts + " puntos cada uno. El marcador queda igual" + chamo(),
       "Tablas! " + pts + " a " + pts + ". No gana nadie esta ronda" + vale(),
@@ -2460,12 +2461,18 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "¡Excelente! " + nombre + " ganaron la partida con " + total + " puntos",
       "Los reyes del dominó son " + nombre + " con " + total + " puntos",
       "Estos pánas sí que saben jugar Dominó, ganaron con " + total + " puntos",
+      "¡¡¡SEÑORES!!.. ¡Se acabó esta váina! " + nombre + " matáron la partída con " + total + " puntos",
+      "¡¡¡SE ACABÓ LO QUE SE DIÓ!!!.. " + nombre + " fueron los ganadores de esta partida con " + total + " puntos",
+      "¡¡NO VALE ESTOS BICHOS SON UNOS CAMPEONES!!.. Ganaron con " + total + " puntos",
     ] : [
       "Llegó el campeon! " + nombre + " ganó la partida con " + total + " puntos. Felicitaciones" + chamo(false),
       "Así si es jugar dominó! " + nombre + " se coronó con " + total + " puntos" + vale(),
       "¡Excelente! " + nombre + " ganó la partida con " + total + " puntos",
       "El rey del dominó es " + nombre + " con " + total + " puntos",
       "Este pana sí que sabe jugar Dominó, ganó con " + total + " puntos",
+      "¡¡¡SEÑORES!!.. ¡Se acabó esta váina! " + nombre + " mató la partída con " + total + " puntos",
+      "¡¡¡SE ACABÓ LO QUE SE DIÓ!!!.. " + nombre + " fue el ganador de esta partida con " + total + " puntos",
+      "¡¡NO VALE ESTE BICHO ES UN CAMPEÓN!!.. Ganó con " + total + " puntos",
     ];
     if (exceso > 0 && exceso <= 9) {
       if (plural) {
@@ -2493,7 +2500,12 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       nombre + ", a llorar pa'l valle",
       nombre + ", no " + (plural ? "tuvieron vida" : "tuvo vida"),
       nombre + ", " + (plural ? "perdieron" : "perdió") + ", qué cagada!",
-      "Definitivamente " + nombre + " no " + (plural ? "tienen" : "tiene") + " chance jugando",
+      "Definitivamente " + nombre + " no " + (plural ? "tienen" : "tiene") + " chance jugando dominó",
+      nombre + " " + (plural ? "son unos muertos, no ven vida" : "es un muerto, no ve vida"),
+      "¡¡¡NO VALE... " + nombre + " NO " + (plural ? "JUEGAN" : "JUEGA") + " UN COÑO!!!",
+      "¡¡NOJÓDA... " + nombre + " NO " + (plural ? "DIVIERTEN" : "DIVIERTE") + " UN CÓÑO!!",
+      "¡¡" + nombre + " " + (plural ? "deberían" : "debería") + " de irse a dormir.. " + (plural ? "Están" : "Está") + " pasando pena!!",
+      "¡¡¡QUÉ BÓLAS!!.. ¡" + nombre + " no " + (plural ? "ganan" : "gana") + " ni que " + (plural ? "jueguen" : "juegue") + " señas!",
     ];
     return f[pickVaried('perdedor2v2', f.length)];
   };
@@ -2741,6 +2753,24 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
       secuencia.push(fraseRonda);
 
+      // Comentario corto sobre el equipo que NO anotó esta ronda, solo en
+      // rondas PARES (2, 4, 6, 8...).
+      if ((roundsPlayed + 1) % 2 === 0) {
+        const rival = names[1 - i];
+        const frasesCero = plural ? [
+          `Mientras que ${rival} se quedaron en cero`,
+          `Y ${rival} no agarraron ni un consejo`,
+          `Y cero puntos para los malúcos de ${rival}`,
+          `¡¡${rival} se llevaron una paloma!!`,
+        ] : [
+          `Mientras que ${rival} se quedó en cero`,
+          `Y ${rival} no agarró ni un consejo`,
+          `Y cero puntos para el malúco de ${rival}`,
+          `¡¡${rival} se llevó una paloma!!`,
+        ];
+        secuencia.push(frasesCero[pickVaried('cero', frasesCero.length)]);
+      }
+
       // Partida que se está alargando mucho: según la meta, al llegar EXACTAMENTE
       // a esa ronda (y no antes ni después) se dispara este comentario.
       const rondaActualGlobal = roundsPlayed + 1;
@@ -2855,16 +2885,6 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const nextPlayer = ((roundsPlayed + 1) % roundCycle) + 1;
       const nextName = players[nextPlayer - 1] || `Jugador ${nextPlayer}`;
       secuencia.push(fraseSale(nextName));
-
-      // Quien le tocaba salir en la ronda que acaba de terminar es quien
-      // baraja para el que sale ahora (no necesariamente quien anotó).
-      const currentPlayer = (roundsPlayed % roundCycle) + 1;
-      const currentName = players[currentPlayer - 1] || `Jugador ${currentPlayer}`;
-      const frasesBarajea = [
-        `Barajéa ${currentName}`,
-        `A ${currentName} le toca mover las piedras`,
-      ];
-      secuencia.push(frasesBarajea[pickVaried('barajea', frasesBarajea.length)]);
     }
     speakSequence(secuencia);
   };
@@ -3473,7 +3493,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
               onClick={() => { if (winner === null) { playClick(); setKeypadIdx(i); } }}
               disabled={winner !== null}
               style={{
-                width: "100%", padding: 0,
+                width: "100%", padding: "4px 0 16px 0",
                 border: `1px solid ${tc[i].main}`, borderRadius: 10,
                 fontSize: 32, textAlign: "center",
                 color: tc[i].main, fontWeight: 700,
@@ -3705,7 +3725,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           onDigit={(d) => setInputs(inputs.map((v, idx) => idx === keypadIdx ? (v + d).slice(0, 3) : v))}
           onBackspace={() => setInputs(inputs.map((v, idx) => idx === keypadIdx ? v.slice(0, -1) : v))}
           onClear={() => setInputs(inputs.map((v, idx) => idx === keypadIdx ? "" : v))}
-          onConfirm={() => { setKeypadIdx(null); }}
+          onConfirm={() => { addPoints(keypadIdx); setKeypadIdx(null); }}
           onClose={() => setKeypadIdx(null)}
         />
       )}
@@ -3909,6 +3929,9 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         `¡Excelente! ${names[newWinner]} ganó la partida con ${newScores[newWinner]} puntos`,
         `El rey del dominó es ${names[newWinner]} con ${newScores[newWinner]} puntos`,
         `Este pana sí que sabe jugar Dominó, ganó con ${newScores[newWinner]} puntos`,
+        `¡¡¡SEÑORES!!.. ¡Se acabó esta váina! ${names[newWinner]} mató la partída con ${newScores[newWinner]} puntos`,
+        `¡¡¡SE ACABÓ LO QUE SE DIÓ!!!.. ${names[newWinner]} fue el ganador de esta partida con ${newScores[newWinner]} puntos`,
+        `¡¡NO VALE ESTE BICHO ES UN CAMPEÓN!!.. Ganó con ${newScores[newWinner]} puntos`,
       ];
       if (excesoSobreMetaMulti > 0 && excesoSobreMetaMulti <= 9) {
         frasesGanar.push(`Este pana no cree en nadie.. le sobraron ${excesoSobreMetaMulti} puntos y gana la partida con ${newScores[newWinner]}`);
@@ -3948,7 +3971,12 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           `${nombrePerdedores}, a llorar pa'l valle`,
           `${nombrePerdedores}, no tuvieron vida`,
           `${nombrePerdedores}, perdieron, qué cagada!`,
-          `Definitivamente ${nombrePerdedores} no tienen chance jugando`,
+          `Definitivamente ${nombrePerdedores} no tienen chance jugando dominó`,
+          `${nombrePerdedores} son unos muertos, no ven vida`,
+          `¡¡¡NO VALE... ${nombrePerdedores} NO JUEGAN UN COÑO!!!`,
+          `¡¡NOJÓDA... ${nombrePerdedores} NO DIVIERTEN UN CÓÑO!!`,
+          `¡¡${nombrePerdedores} deberían de irse a dormir.. Están pasando pena!!`,
+          `¡¡¡QUÉ BÓLAS!!.. ¡${nombrePerdedores} no ganan ni que jueguen señas!`,
         ];
         secuenciaFinal.push(frasesPerdedorMulti[pickVaried('perdedorMulti', frasesPerdedorMulti.length)]);
       }
@@ -4022,9 +4050,8 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       }
 
       const frasesIndividual = pts <= 7 ? [
-        `Es mejor coger ${pts} que ${pts} cojan a uno. ${names[i]} anotó ${pts} puntos`,
-        `Algo es algo. ${names[i]} se llevó ${pts} puntitos`,
-        `Ok, ${names[i]} agarró ${pts} puntos`,
+        `${names[i]} agarró ${pts}. Es mejor coger ${pts} que ${pts} cojan a uno`,
+        `Algo es algo, peor es nada. ${names[i]} se llevó ${pts} puntitos`,
       ] : [
         `Muy bien! ${names[i]} anotó ${pts} puntos. Va con ${newScores[i]} en total`,
         `Así se juega! ${names[i]} se llevó ${pts} puntos. Tiene ${newScores[i]} en el marcador`,
@@ -4032,8 +4059,24 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         `${names[i]} suma ${pts}. Llegó a los ${newScores[i]} puntos`,
         `Ok, ${names[i]} agarró ${pts} puntos`,
         `Muchachos.. ${names[i]} ganó la mano con ${pts} puntos`,
+        `¡Listo! ${names[i]} agarró ${pts} puntos pol pecho`,
+        `Esta mano.. ${names[i]} rayó con ${pts} puntos!`,
+        `¡QUÉ NIVEL! ${pts} puntos para ${names[i]}`,
+        `¡Excelente!.. esta ronda la ganó ${names[i]} con ${pts} puntos`,
       ];
       secuencia.push(frasesIndividual[pickVaried('individualMulti', frasesIndividual.length)]);
+
+      // Comentario corto sobre "los demás" (los que NO anotaron esta ronda),
+      // solo en rondas PARES (2, 4, 6, 8...).
+      if ((roundsPlayed + 1) % 2 === 0) {
+        const frasesCeroMulti = [
+          "Mientras que los demás se quedaron en cero",
+          "Y los demás no agarraron ni un consejo",
+          "Y cero puntos para los malúcos de los demás",
+          "¡¡Los demás se llevaron una paloma!!",
+        ];
+        secuencia.push(frasesCeroMulti[pickVaried('ceroMulti', frasesCeroMulti.length)]);
+      }
 
       // Partida que se está alargando mucho: según la meta, al llegar EXACTAMENTE
       // a esa ronda (y no antes ni después) se dispara este comentario.
@@ -4133,32 +4176,18 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
     playSound("tie");
     // Empate específicamente en la 3ra ronda (aplica 3p y 4p) o en la 4ta
     // ronda (solo aplica en 4p, ya que en 3p no existe "Jugador 4").
-    const secuencia = roundsPlayed === 2
-      ? [`¡Hubo Empate!... ${names[2] || "Jugador 3"} perdió la mano por mamagüévo`]
-      : (roundsPlayed === 3 && n === 4)
-      ? [`¡¡Nadie gana!!... y ${names[3] || "Jugador 4"} perdió su mano porque es una maséte loco`]
-      : [(() => {
-          const frasesEmpateMulti = [
-            "Empate en la ronda, nadie suma",
-            "Ronda empatada, aquí no ganó nadie",
-            "Tablas esta ronda, sigan jugando",
-          ];
-          return frasesEmpateMulti[pickVaried('empateMulti', frasesEmpateMulti.length)];
-        })()];
-
-    const nextIdx = (roundsPlayed + 1) % n;
-    secuencia.push(fraseSale(names[nextIdx]));
-
-    // Quien le tocaba salir en la ronda que acaba de terminar es quien
-    // baraja para el que sale ahora (no necesariamente quien anotó).
-    const currentIdx = roundsPlayed % n;
-    const frasesBarajeaMulti = [
-      `Barajéa ${names[currentIdx]}`,
-      `A ${names[currentIdx]} le toca mover las piedras`,
-    ];
-    secuencia.push(frasesBarajeaMulti[pickVaried('barajeaMulti', frasesBarajeaMulti.length)]);
-
-    speakSequence(secuencia);
+    if (roundsPlayed === 2) {
+      speak(`¡Hubo Empate!... ${names[2] || "Jugador 3"} perdió la mano por mamagüévo`);
+    } else if (roundsPlayed === 3 && n === 4) {
+      speak(`¡¡Nadie gana!!... y ${names[3] || "Jugador 4"} perdió su mano porque es una maséte loco`);
+    } else {
+      const frasesEmpateMulti = [
+        "Empate en la ronda, nadie suma",
+        "Ronda empatada, aquí no ganó nadie",
+        "Tablas esta ronda, sigan jugando",
+      ];
+      speak(frasesEmpateMulti[pickVaried('empateMulti', frasesEmpateMulti.length)]);
+    }
   };
 
   const handleAskPlayer = () => {
@@ -4547,7 +4576,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
                 onClick={() => { if (winner === null) { playClick(); setKeypadIdx(i); } }}
                 disabled={winner !== null}
                 style={{
-                  width: "100%", padding: 0,
+                  width: "100%", padding: n === 3 ? "2px 0 8px 0" : "4px 0 10px 0",
                   border: `1px solid ${color}`, borderRadius: 8,
                   fontSize: n === 3 ? 18 : 22, textAlign: "center", color: color, fontWeight: 700,
                   background: "#050505", marginBottom: 6, boxSizing: "border-box",
@@ -4730,7 +4759,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           onDigit={(d) => setInputs(inputs.map((v, idx) => idx === keypadIdx ? (v + d).slice(0, 3) : v))}
           onBackspace={() => setInputs(inputs.map((v, idx) => idx === keypadIdx ? v.slice(0, -1) : v))}
           onClear={() => setInputs(inputs.map((v, idx) => idx === keypadIdx ? "" : v))}
-          onConfirm={() => { setKeypadIdx(null); }}
+          onConfirm={() => { addPoints(keypadIdx); setKeypadIdx(null); }}
           onClose={() => setKeypadIdx(null)}
         />
       )}
