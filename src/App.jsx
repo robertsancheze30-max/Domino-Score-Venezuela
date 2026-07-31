@@ -2717,7 +2717,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         if (r.tie || !(r.added[i] > 0 && r.added[1 - i] === 0)) break;
         rachaAnotacion++;
       }
-      if (rachaAnotacion === 3) {
+      if (rachaAnotacion === 3 && newScores[1 - i] === 0) {
         const frasesRachaTres = plural ? [
           "Pareciera que jugaran solos porque el otro equipo no raya",
           `¡Qué mala suerte tienen ${names[1 - i]}! Ya van 3 rondas sin sumar un punto`,
@@ -2727,7 +2727,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         ];
         secuencia.push(frasesRachaTres[pickVaried('rachaTres', frasesRachaTres.length)]);
       }
-      if (rachaAnotacion === 5) {
+      if (rachaAnotacion === 5 && newScores[1 - i] === 0) {
         const fraseRachaCinco = plural ? [
           "Sin duda alguna que estos panas están jugando sólos",
           "Sin duda alguna que estos chamos están jugando sólos",
@@ -4026,14 +4026,15 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         if (r.tie || r.playerIdx !== i) break;
         rachaAnotacionMulti++;
       }
-      if (rachaAnotacionMulti === 3) {
+      const todosLosDemasEnCero = newScores.every((s, idx) => idx === i || s === 0);
+      if (rachaAnotacionMulti === 3 && todosLosDemasEnCero) {
         const frasesRachaTresMulti = [
           "Pareciera que jugara solo porque los demás no rayan",
           "¡Qué mala suerte tienen los demás! Ya van 3 rondas sin que nadie más sume",
         ];
         secuencia.push(frasesRachaTresMulti[pickVaried('rachaTresMulti', frasesRachaTresMulti.length)]);
       }
-      if (rachaAnotacionMulti === 5) {
+      if (rachaAnotacionMulti === 5 && todosLosDemasEnCero) {
         const fraseRachaCincoMulti = [
           "Sin duda alguna que este pana está jugando sólo",
           "Sin duda alguna que este chamo está jugando sólo",
