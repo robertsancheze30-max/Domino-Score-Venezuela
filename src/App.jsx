@@ -2753,22 +2753,18 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
       secuencia.push(fraseRonda);
 
-      // Comentario corto sobre el equipo que NO anotó esta ronda, solo en
-      // rondas PARES (2, 4, 6, 8...).
-      if ((roundsPlayed + 1) % 2 === 0) {
-        const rival = names[1 - i];
-        const frasesCero = plural ? [
-          `Mientras que ${rival} se quedaron en cero`,
-          `Y ${rival} no agarraron ni un consejo`,
-          `Y cero puntos para los malúcos de ${rival}`,
-          `¡¡${rival} se llevaron una paloma!!`,
-        ] : [
-          `Mientras que ${rival} se quedó en cero`,
-          `Y ${rival} no agarró ni un consejo`,
-          `Y cero puntos para el malúco de ${rival}`,
-          `¡¡${rival} se llevó una paloma!!`,
-        ];
-        secuencia.push(frasesCero[pickVaried('cero', frasesCero.length)]);
+      // Cerca de la meta: suena ANTES que el comentario de "cero" del rival.
+      const restanteJugadorActual = meta - newScores[i];
+      const plural2v2 = roundCycle === 4;
+
+      if (restanteJugadorActual >= 4 && restanteJugadorActual <= 8) {
+        secuencia.push(plural2v2 ? "Todavía no se van" : "Todavía no se va");
+      } else if (restanteJugadorActual === 3) {
+        secuencia.push(plural2v2 ? "Que cagada, les faltaron 3 puntos para ganar" : "Que cagada, te faltaron 3 puntos para ganar");
+      } else if (restanteJugadorActual === 2) {
+        secuencia.push(plural2v2 ? "¡GUÁÁO!.. por 2 puntos no ganan la partida" : "¡GUÁÁO!.. por 2 puntos no gana la partida");
+      } else if (restanteJugadorActual === 1) {
+        secuencia.push(plural2v2 ? "Que cagada, les faltó un pelo e' culo para ganar" : "Que cagada, te faltó un pelo e' culo para ganar");
       }
 
       // Partida que se está alargando mucho: según la meta, al llegar EXACTAMENTE
@@ -2781,20 +2777,6 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           "Al parecer esta partida es infinita",
         ];
         secuencia.push(frasesPartidaLarga[pickVaried('partidaLarga', frasesPartidaLarga.length)]);
-      }
-
-
-      const restanteJugadorActual = meta - newScores[i];
-      const plural2v2 = roundCycle === 4;
-
-      if (restanteJugadorActual >= 4 && restanteJugadorActual <= 8) {
-        secuencia.push(plural2v2 ? "Todavía no se van" : "Todavía no se va");
-      } else if (restanteJugadorActual === 3) {
-        secuencia.push(plural2v2 ? "Que cagada, les faltaron 3 puntos para ganar" : "Que cagada, te faltaron 3 puntos para ganar");
-      } else if (restanteJugadorActual === 2) {
-        secuencia.push(plural2v2 ? "¡GUÁÁO!.. por 2 puntos no ganan la partida" : "¡GUÁÁO!.. por 2 puntos no gana la partida");
-      } else if (restanteJugadorActual === 1) {
-        secuencia.push(plural2v2 ? "Que cagada, les faltó un pelo e' culo para ganar" : "Que cagada, te faltó un pelo e' culo para ganar");
       }
 
       // Mitad del camino: se dice una sola vez, justo cuando cruza la mitad de la meta
@@ -2840,6 +2822,25 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
             }
           }
         }
+      }
+
+      // Comentario corto sobre el equipo que NO anotó esta ronda, solo en
+      // rondas PARES (2, 4, 6, 8...). Va AL FINAL, después de todo lo
+      // referente al equipo que acaba de sumar.
+      if ((roundsPlayed + 1) % 2 === 0) {
+        const rival = names[1 - i];
+        const frasesCero = plural ? [
+          `Mientras que ${rival} se quedaron en cero`,
+          `Y ${rival} no agarraron ni un consejo`,
+          `Y cero puntos para los malúcos de ${rival}`,
+          `¡¡${rival} se llevaron una paloma!!`,
+        ] : [
+          `Mientras que ${rival} se quedó en cero`,
+          `Y ${rival} no agarró ni un consejo`,
+          `Y cero puntos para el malúco de ${rival}`,
+          `¡¡${rival} se llevó una paloma!!`,
+        ];
+        secuencia.push(frasesCero[pickVaried('cero', frasesCero.length)]);
       }
 
       } // cierre del else de fraseExacta11o13
@@ -4066,17 +4067,18 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       ];
       secuencia.push(frasesIndividual[pickVaried('individualMulti', frasesIndividual.length)]);
 
-      // Comentario corto sobre "los demás" (los que NO anotaron esta ronda),
-      // solo en rondas PARES (2, 4, 6, 8...).
-      if ((roundsPlayed + 1) % 2 === 0) {
-        const frasesCeroMulti = [
-          "Mientras que los demás se quedaron en cero",
-          "Y los demás no agarraron ni un consejo",
-          "Y cero puntos para los malúcos de los demás",
-          "¡¡Los demás se llevaron una paloma!!",
-        ];
-        secuencia.push(frasesCeroMulti[pickVaried('ceroMulti', frasesCeroMulti.length)]);
+      // Cerca de la meta: suena ANTES que el comentario de "cero" de los demás.
+      const restanteJugadorActual = meta - newScores[i];
+      if (restanteJugadorActual >= 4 && restanteJugadorActual <= 8) {
+        secuencia.push("Todavía no se va");
+      } else if (restanteJugadorActual === 3) {
+        secuencia.push("Que cagada, te faltaron 3 puntos para ganar");
+      } else if (restanteJugadorActual === 2) {
+        secuencia.push("¡GUÁÁO!.. por 2 puntos no gana la partida");
+      } else if (restanteJugadorActual === 1) {
+        secuencia.push("Que cagada, te faltó un pelo e' culo para ganar");
       }
+
 
       // Partida que se está alargando mucho: según la meta, al llegar EXACTAMENTE
       // a esa ronda (y no antes ni después) se dispara este comentario.
@@ -4088,18 +4090,6 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           "Al parecer esta partida es infinita",
         ];
         secuencia.push(frasesPartidaLargaMulti[pickVaried('partidaLargaMulti', frasesPartidaLargaMulti.length)]);
-      }
-
-      // Anunciar solo si el jugador que ACABA de sumar quedó a 8 puntos o menos de ganar
-      const restanteJugadorActual = meta - newScores[i];
-      if (restanteJugadorActual >= 4 && restanteJugadorActual <= 8) {
-        secuencia.push("Todavía no se va");
-      } else if (restanteJugadorActual === 3) {
-        secuencia.push("Que cagada, te faltaron 3 puntos para ganar");
-      } else if (restanteJugadorActual === 2) {
-        secuencia.push("¡GUÁÁO!.. por 2 puntos no gana la partida");
-      } else if (restanteJugadorActual === 1) {
-        secuencia.push("Que cagada, te faltó un pelo e' culo para ganar");
       }
 
       // Mitad del camino: se dice una sola vez, justo cuando cruza la mitad de la meta
@@ -4150,6 +4140,19 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
             }
           }
         }
+      }
+
+      // Comentario corto sobre "los demás" (los que NO anotaron esta ronda),
+      // solo en rondas PARES (2, 4, 6, 8...). Va AL FINAL, después de todo lo
+      // referente al jugador que acaba de sumar.
+      if ((roundsPlayed + 1) % 2 === 0) {
+        const frasesCeroMulti = [
+          "Mientras que los demás se quedaron en cero",
+          "Y los demás no agarraron ni un consejo",
+          "Y cero puntos para los malúcos de los demás",
+          "¡¡Los demás se llevaron una paloma!!",
+        ];
+        secuencia.push(frasesCeroMulti[pickVaried('ceroMulti', frasesCeroMulti.length)]);
       }
 
       } // cierre del else de fraseExacta11o13Multi
