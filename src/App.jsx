@@ -99,6 +99,9 @@ const TTS_NAME_FIXES = {
   "guillermo": "Guiyermo",
   "ángel": "Anjel",
   "angel": "Anjel",
+  "rayó": "raió",
+  "rayaron": "raiaron",
+  "llorar": "liorar",
 };
 function ttsSafeText(text) {
   if (!text) return text;
@@ -2218,7 +2221,7 @@ function NumberKeypad({ color, value, label, onDigit, onBackspace, onClear, onCo
           color: "#000", fontWeight: 900, fontFamily: "'Orbitron', sans-serif", fontSize: 16, letterSpacing: 1,
           cursor: "pointer", position: "relative",
           boxShadow: `0 0 14px ${color}aa, inset 0 5px 6px -3px #ffffff88, inset 0 -5px 6px -3px #00000066`,
-        }}>✓ INGRESAR</button>
+        }}>✓ LISTO</button>
       </div>
     </div>
   );
@@ -2421,10 +2424,10 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
   const frasesPunto = (nombre, pts, total, plural = false) => {
     const f = plural ? [
-      "¡Muy bien! " + nombre + " anotaron " + pts + " puntos. Van " + total + " en total" + chamo(true),
-      "¡Así se juega! " + nombre + " sumaron " + pts + ". Llevan " + total + " puntos" + vale(),
-      "¡Brutal! " + nombre + " se apuntaron " + pts + " punticos. Total acumulado " + total + chamo(true),
-      "¡Ahí están! " + nombre + " con " + pts + " puntos. Acumulan " + total + vale(),
+      "Muy bien! " + nombre + " anotaron " + pts + " puntos. Van " + total + " en total" + chamo(true),
+      "Así se juega! " + nombre + " sumaron " + pts + ". Llevan " + total + " puntos" + vale(),
+      "Brutal! " + nombre + " se apuntaron " + pts + " punticos. Total acumulado " + total + chamo(true),
+      "Ahí están! " + nombre + " con " + pts + " puntos. Acumulan " + total + vale(),
       "Ok, " + nombre + " agarraron " + pts + " puntos",
       "Muchachos.. " + nombre + " ganaron la mano con " + pts + " puntos",
       "¡Listo! " + nombre + " agarraron " + pts + " puntos pol pecho",
@@ -2432,10 +2435,10 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "¡QUÉ NIVEL! " + pts + " puntos para " + nombre,
       "¡Excelente!.. esta ronda la ganaron " + nombre + " con " + pts + " puntos",
     ] : [
-      "¡Muy bien! " + nombre + " anotó " + pts + " puntos. Lleva " + total + " en total" + chamo(false),
-      "¡Así se juega! " + nombre + " suma " + pts + ". Acumula " + total + " puntos" + vale(),
-      "¡Brutal! " + nombre + " se apuntó " + pts + " punticos. Total acumulado " + total + chamo(false),
-      "¡Ahí está! " + nombre + " con " + pts + " puntos. Lleva " + total + " acumulado" + vale(),
+      "Muy bien! " + nombre + " anotó " + pts + " puntos. Lleva " + total + " en total" + chamo(false),
+      "Así se juega! " + nombre + " suma " + pts + ". Acumula " + total + " puntos" + vale(),
+      "Brutal! " + nombre + " se apuntó " + pts + " punticos. Total acumulado " + total + chamo(false),
+      "Ahí está! " + nombre + " con " + pts + " puntos. Lleva " + total + " acumulado" + vale(),
       "Ok, " + nombre + " agarró " + pts + " puntos",
       "Muchachos.. " + nombre + " ganó la mano con " + pts + " puntos",
       "¡Listo! " + nombre + " agarró " + pts + " puntos pol pecho",
@@ -2448,16 +2451,16 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
   const frasesEmpate = (pts) => {
     const f = [
-      "¡Empate! " + pts + " puntos cada uno. El marcador queda igual" + chamo(),
-      "¡Tablas! " + pts + " a " + pts + ". No gana nadie esta ronda" + vale(),
+      "Empate! " + pts + " puntos cada uno. El marcador queda igual" + chamo(),
+      "Tablas! " + pts + " a " + pts + ". No gana nadie esta ronda" + vale(),
     ];
     return f[pickVaried('empate', f.length)];
   };
 
   const frasesGanador = (nombre, total, plural = false, exceso = 0) => {
     const f = plural ? [
-      "¡Llegaron los campeones! " + nombre + " ganaron la partida con " + total + " puntos. Felicitaciones" + chamo(true),
-      "¡Así sí es jugar dominó! " + nombre + " se coronaron con " + total + " puntos" + vale(),
+      "Llegaron los campeones! " + nombre + " ganaron la partida con " + total + " puntos. Felicitaciones" + chamo(true),
+      "Así si es jugar dominó! " + nombre + " se coronaron con " + total + " puntos" + vale(),
       "¡Excelente! " + nombre + " ganaron la partida con " + total + " puntos",
       "Los reyes del dominó son " + nombre + " con " + total + " puntos",
       "Estos pánas sí que saben jugar Dominó, ganaron con " + total + " puntos",
@@ -2465,8 +2468,8 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "¡¡¡SE ACABÓ LO QUE SE DIÓ!!!.. " + nombre + " fueron los ganadores de esta partida con " + total + " puntos",
       "¡¡NO VALE ESTOS BICHOS SON UNOS CAMPEONES!!.. Ganaron con " + total + " puntos",
     ] : [
-      "¡Llegó el campeón! " + nombre + " ganó la partida con " + total + " puntos. Felicitaciones" + chamo(false),
-      "¡Así sí es jugar dominó! " + nombre + " se coronó con " + total + " puntos" + vale(),
+      "Llegó el campeon! " + nombre + " ganó la partida con " + total + " puntos. Felicitaciones" + chamo(false),
+      "Así si es jugar dominó! " + nombre + " se coronó con " + total + " puntos" + vale(),
       "¡Excelente! " + nombre + " ganó la partida con " + total + " puntos",
       "El rey del dominó es " + nombre + " con " + total + " puntos",
       "Este pana sí que sabe jugar Dominó, ganó con " + total + " puntos",
@@ -2513,10 +2516,10 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
   const frasesZapato = (ganador, perdedor, plural = false) => {
     const f = plural ? [
       ganador + " ganaron! Y " + perdedor + " se llevaron el zapato. Cero puntos! Qué malos! Les toca brindar las cervezas" + chamo(true),
-      "¡Qué paliza! " + ganador + " arrasaron. " + perdedor + " se fueron con el zapato puesto y vale doble. Que brinden las cervezas" + vale(),
+      "Qué paliza! " + ganador + " arrasaron. " + perdedor + " se fueron con el zapato puesto y vale doble. Que brinden las cervezas" + vale(),
     ] : [
       ganador + " ganó! Y " + perdedor + " se llevó el zapato. Cero puntos! Qué malo! Le toca brindar las cervezas" + chamo(false),
-      "¡Qué paliza! " + ganador + " arrasó. " + perdedor + " se fue con el zapato puesto y vale doble. Que brinde las cervezas" + vale(),
+      "Qué paliza! " + ganador + " arrasó. " + perdedor + " se fue con el zapato puesto y vale doble. Que brinde las cervezas" + vale(),
     ];
     return f[pickVaried('zapato', f.length)];
   };
