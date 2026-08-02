@@ -36,9 +36,9 @@ export default async function handler(req, res) {
           model_id: "eleven_turbo_v2_5",
           language_code: "es", // fuerza español (evita que "adivine" inglés)
           voice_settings: {
-            stability: 0.55,       // un poco más variable = entonación más natural, menos "plano"
+            stability: 0.35,       // un poco más variable = entonación más natural, menos "plano"
             similarity_boost: 0.85,
-            style: 0.25,           // un poco más de expresividad, sin pasarse
+            style: 0.45,           // un poco más de expresividad, sin pasarse
             use_speaker_boost: true,
             // quitamos "speed" (podía generar cortes/artefactos raros en algunas frases)
           },
