@@ -2902,10 +2902,26 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
     // en 2v2, ya que en 1v1 no existen "Jugador 3" ni "Jugador 4"): frase fija.
     const esEmpateRonda3 = roundCycle === 4 && roundsPlayed === 2;
     const esEmpateRonda4 = roundCycle === 4 && roundsPlayed === 3;
+    // Empate con puntaje exacto (mismos puntos para ambos en la jugada): frase única.
+    const esEmpate15 = pts0 === 15;
+    const esEmpate19 = pts0 === 19;
+    const esEmpate22 = pts0 === 22;
+    const esEmpate25 = pts0 === 25;
+    const esEmpate27 = pts0 === 27;
     const secuencia = esEmpateRonda3
       ? [`¡Hubo Empate!... ${players[2] || "Jugador 3"} perdió la mano por mamagüévo`]
       : esEmpateRonda4
       ? [`¡¡Nadie gana!!... y ${players[3] || "Jugador 4"} perdió su mano porque es una maséte loco`]
+      : esEmpate15
+      ? [`¡¡BUENOS SEÑORES!! aquí no gana nadie.. quedaron iguales`]
+      : esEmpate19
+      ? [`¡¡¡MIERDA!!!.. ¡agarraron 19 cada uno y nadie suma!`]
+      : esEmpate22
+      ? [`¡¡¡COÑO QUE CAGADA!!.. quedaron empatados.. cero puntos para cada uno`]
+      : esEmpate25
+      ? [`¡¡¡Fue buena la tranca pero de nada sirvió porque nadie sumó!!!.. ¡Quedaron tablas!`]
+      : esEmpate27
+      ? [`¡¡¡NO JÓDA!!.. ¡Tanta vaina para quedar empatados!.. ¡siguen iguales!`]
       : [frasesEmpate(pts0)];
     if (roundsPlayed >= 0) {
       const nextPlayer = ((roundsPlayed + 1) % roundCycle) + 1;
