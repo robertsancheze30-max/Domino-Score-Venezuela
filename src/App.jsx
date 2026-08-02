@@ -3519,7 +3519,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
               onClick={() => { if (winner === null) { playClick(); setKeypadIdx(i); } }}
               disabled={winner !== null}
               style={{
-                width: "100%", padding: "4px 0 16px 0",
+                width: "100%", padding: "0",
                 border: `1px solid ${tc[i].main}`, borderRadius: 10,
                 fontSize: 32, textAlign: "center",
                 color: tc[i].main, fontWeight: 700,
@@ -3529,6 +3529,8 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
                 letterSpacing: 1,
                 boxShadow: `inset 0 0 10px #00000099, 0 0 12px ${tc[i].main}66`,
                 height: 60,
+                lineHeight: "58px",
+                display: "block",
                 cursor: "pointer",
               }}
             />
@@ -4618,13 +4620,15 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
                 onClick={() => { if (winner === null) { playClick(); setKeypadIdx(i); } }}
                 disabled={winner !== null}
                 style={{
-                  width: "100%", padding: n === 3 ? "2px 0 8px 0" : "4px 0 10px 0",
+                  width: "100%", padding: "0",
                   border: `1px solid ${color}`, borderRadius: 8,
                   fontSize: n === 3 ? 18 : 22, textAlign: "center", color: color, fontWeight: 700,
                   background: "#050505", marginBottom: 6, boxSizing: "border-box",
                   fontFamily: "'Orbitron', sans-serif",
                   boxShadow: `inset 0 0 8px #00000099, 0 0 6px ${color}44`,
                   height: n === 3 ? 36 : 42,
+                  lineHeight: n === 3 ? "34px" : "40px",
+                  display: "block",
                   cursor: "pointer",
                 }}
               />
