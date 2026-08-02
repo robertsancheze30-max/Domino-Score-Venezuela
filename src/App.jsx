@@ -2525,7 +2525,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         f.push(`Este muchacho está sobrado.. ganó por viaje con ${total} puntos`);
       }
     }
-    return f[pickVaried('ganador', f.length)];
+    return f[pickNoRepeat('ganador', f.length)];
   };
 
   const frasesPerdedor = (nombre, plural = false) => {
@@ -2541,7 +2541,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "¡¡" + nombre + " " + (plural ? "deberían" : "debería") + " de irse a dormir.. " + (plural ? "Están" : "Está") + " pasando pena!!",
       "¡¡¡QUÉ BÓLAS!!.. ¡" + nombre + " no " + (plural ? "ganan" : "gana") + " ni que " + (plural ? "jueguen" : "juegue") + " con señas!",
     ];
-    return f[pickVaried('perdedor2v2', f.length)];
+    return f[pickNoRepeat('perdedor2v2', f.length)];
   };
 
   const frasesZapato = (ganador, perdedor, plural = false) => {
@@ -4007,7 +4007,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         frasesGanar.push(`Este pana está sobrado.. ganó por viaje con ${newScores[newWinner]} puntos`);
         frasesGanar.push(`Este muchacho está sobrado.. ganó por viaje con ${newScores[newWinner]} puntos`);
       }
-      const secuenciaFinal = [frasesGanar[pickVaried('ganadorMulti', frasesGanar.length)]];
+      const secuenciaFinal = [frasesGanar[pickNoRepeat('ganadorMulti', frasesGanar.length)]];
 
       if (newScores[newWinner] === meta) {
         const fraseJustoMulti = [
@@ -4045,7 +4045,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           `¡¡${nombrePerdedores} deberían de irse a dormir.. Están pasando pena!!`,
           `¡¡¡QUÉ BÓLAS!!.. ¡${nombrePerdedores} no ganan ni que jueguen con señas!`,
         ];
-        secuenciaFinal.push(frasesPerdedorMulti[pickVaried('perdedorMulti', frasesPerdedorMulti.length)]);
+        secuenciaFinal.push(frasesPerdedorMulti[pickNoRepeat('perdedorMulti', frasesPerdedorMulti.length)]);
       }
 
       setTimeout(() => speakSequence(secuenciaFinal), 600);
