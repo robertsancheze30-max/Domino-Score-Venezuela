@@ -250,6 +250,25 @@ const pickVaried = (poolKey, total) => {
   return idx;
 };
 
+// "Baraja": reparte todas las frases del pool en orden aleatorio antes de
+// repetir cualquiera de ellas (a diferencia de pickVaried, que solo evita
+// repetir la inmediatamente anterior). Se usa para los pools de "suma de puntos".
+const _bagState = {};
+const pickNoRepeat = (poolKey, total) => {
+  if (total <= 1) return 0;
+  let bag = _bagState[poolKey];
+  if (!bag || bag.length === 0 || bag._total !== total) {
+    bag = Array.from({ length: total }, (_, i) => i);
+    for (let i = bag.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [bag[i], bag[j]] = [bag[j], bag[i]];
+    }
+    bag._total = total;
+    _bagState[poolKey] = bag;
+  }
+  return bag.pop();
+};
+
 // Variantes para anunciar de quién es el turno, usadas en los 4 modos de juego.
 const fraseSale = (nombre) => {
   const f = [
@@ -2419,7 +2438,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       nombre + " agarró " + pts + ". Es mejor coger " + pts + " que " + pts + " cojan a uno" + chamo(false),
       "Algo es algo, peor es nada. " + nombre + " se llevó " + pts + " puntitos" + vale(),
     ];
-    return f[pickVaried('pocoPuntaje', f.length)];
+    return f[pickNoRepeat('pocoPuntaje', f.length)];
   };
 
   const frasesPunto = (nombre, pts, total, plural = false) => {
@@ -2458,7 +2477,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "¡¡¡QUE ARRÉCHO ES " + nombre + "!!!.. ¡Sumó " + pts + " puntos!",
       "¡¡¡SÍ ASÍ LLUEVE, QUE NO ESCAMPE!!!.. " + pts + " puntos para " + nombre,
     ];
-    return f[pickVaried('puntoNormal', f.length)];
+    return f[pickNoRepeat('puntoNormal', f.length)];
   };
 
   const frasesEmpate = (pts) => {
@@ -2867,7 +2886,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           `¡¡¡Mientras que ${rival} la está es cagándo!!!`,
           `¡¡¡Y NI HABLAR DE ${rival}!!!.. ¡Es un muerto!`,
         ];
-        secuencia.push(frasesCero[pickVaried('cero', frasesCero.length)]);
+        secuencia.push(frasesCero[pickNoRepeat('cero', frasesCero.length)]);
       }
 
       } // cierre del else de fraseExacta11o13
@@ -4121,7 +4140,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         `¡¡¡QUE ARRÉCHO ES ${names[i]}!!!.. ¡Sumó ${pts} puntos!`,
         `¡¡¡SÍ ASÍ LLUEVE, QUE NO ESCAMPE!!!.. ${pts} puntos para ${names[i]}`,
       ];
-      secuencia.push(frasesIndividual[pickVaried('individualMulti', frasesIndividual.length)]);
+      secuencia.push(frasesIndividual[pickNoRepeat(pts <= 7 ? 'individualMultiLow' : 'individualMultiHigh', frasesIndividual.length)]);
 
       // Cerca de la meta: suena ANTES que el comentario de "cero" de los demás.
       const restanteJugadorActual = meta - newScores[i];
@@ -4212,7 +4231,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           "¡¡¡Mientras que los demás la están es cagándo!!!",
           "¡¡¡Y NI HABLAR DE los demás!!!.. ¡Son unos muertos!",
         ];
-        secuencia.push(frasesCeroMulti[pickVaried('ceroMulti', frasesCeroMulti.length)]);
+        secuencia.push(frasesCeroMulti[pickNoRepeat('ceroMulti', frasesCeroMulti.length)]);
       }
 
       } // cierre del else de fraseExacta11o13Multi
