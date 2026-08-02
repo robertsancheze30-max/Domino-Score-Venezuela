@@ -2539,7 +2539,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "¡¡¡NO VALE... " + nombre + " NO " + (plural ? "JUEGAN" : "JUEGA") + " UN COÑO!!!",
       "¡¡NOJÓDA... " + nombre + " NO " + (plural ? "DIVIERTEN" : "DIVIERTE") + " UN CÓÑO!!",
       "¡¡" + nombre + " " + (plural ? "deberían" : "debería") + " de irse a dormir.. " + (plural ? "Están" : "Está") + " pasando pena!!",
-      "¡¡¡QUÉ BÓLAS!!.. ¡" + nombre + " no " + (plural ? "ganan" : "gana") + " ni que " + (plural ? "jueguen" : "juegue") + " señas!",
+      "¡¡¡QUÉ BÓLAS!!.. ¡" + nombre + " no " + (plural ? "ganan" : "gana") + " ni que " + (plural ? "jueguen" : "juegue") + " con señas!",
     ];
     return f[pickVaried('perdedor2v2', f.length)];
   };
@@ -4043,7 +4043,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           `¡¡¡NO VALE... ${nombrePerdedores} NO JUEGAN UN COÑO!!!`,
           `¡¡NOJÓDA... ${nombrePerdedores} NO DIVIERTEN UN CÓÑO!!`,
           `¡¡${nombrePerdedores} deberían de irse a dormir.. Están pasando pena!!`,
-          `¡¡¡QUÉ BÓLAS!!.. ¡${nombrePerdedores} no ganan ni que jueguen señas!`,
+          `¡¡¡QUÉ BÓLAS!!.. ¡${nombrePerdedores} no ganan ni que jueguen con señas!`,
         ];
         secuenciaFinal.push(frasesPerdedorMulti[pickVaried('perdedorMulti', frasesPerdedorMulti.length)]);
       }
