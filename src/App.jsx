@@ -2434,6 +2434,12 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "Esta mano.. " + nombre + " rayaron con " + pts + " puntos!",
       "¡QUÉ NIVEL! " + pts + " puntos para " + nombre,
       "¡Excelente!.. esta ronda la ganaron " + nombre + " con " + pts + " puntos",
+      "¡¡QUE MANTEQUILLA!!.. ¡Esta mano la ganaron " + nombre + " con " + pts + " puntos!",
+      "¡¡Muy fáaacil!!.. ¡Esos " + pts + " puntos se los llevaron " + nombre + "!",
+      "¡¡Estos bichos " + nombre + " no creen en nadie!! Agarraron " + pts + " puntos",
+      "¡¡¡" + nombre + " son unos fenómenos!!!.. ¡Se llevaron esta mano con " + pts + " puntos!",
+      "¡¡¡QUE ARRÉCHO SON " + nombre + "!!!.. ¡Sumaron " + pts + " puntos!",
+      "¡¡¡SÍ ASÍ LLUEVE, QUE NO ESCAMPE!!!.. " + pts + " puntos para " + nombre,
     ] : [
       "Muy bien! " + nombre + " anotó " + pts + " puntos. Lleva " + total + " en total" + chamo(false),
       "Así se juega! " + nombre + " suma " + pts + ". Acumula " + total + " puntos" + vale(),
@@ -2445,6 +2451,12 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       "Esta mano.. " + nombre + " rayó con " + pts + " puntos!",
       "¡QUÉ NIVEL! " + pts + " puntos para " + nombre,
       "¡Excelente!.. esta ronda la ganó " + nombre + " con " + pts + " puntos",
+      "¡¡QUE MANTEQUILLA!!.. ¡Esta mano la ganó " + nombre + " con " + pts + " puntos!",
+      "¡¡Muy fáaacil!!.. ¡Esos " + pts + " puntos se los llevó " + nombre + "!",
+      "¡¡Este bicho " + nombre + " no cree en nadie!! Agarró " + pts + " puntos",
+      "¡¡¡" + nombre + " es un fenómeno!!!.. ¡Se llevó esta mano con " + pts + " puntos!",
+      "¡¡¡QUE ARRÉCHO ES " + nombre + "!!!.. ¡Sumó " + pts + " puntos!",
+      "¡¡¡SÍ ASÍ LLUEVE, QUE NO ESCAMPE!!!.. " + pts + " puntos para " + nombre,
     ];
     return f[pickVaried('puntoNormal', f.length)];
   };
@@ -2841,11 +2853,17 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           `Y ${rival} no agarraron ni un consejo`,
           `Y cero puntos para los malúcos de ${rival}`,
           `¡¡${rival} se llevaron una paloma!!`,
+          `¡¡VERGA!!.. ¡${rival} dan es pena!`,
+          `¡¡NO VALE!! ¡${rival} no divierten!`,
+          `¡¡¡Mientras que ${rival} la están es cagándo!!!`,
         ] : [
           `Mientras que ${rival} se quedó en cero`,
           `Y ${rival} no agarró ni un consejo`,
           `Y cero puntos para el malúco de ${rival}`,
           `¡¡${rival} se llevó una paloma!!`,
+          `¡¡VERGA!!.. ¡${rival} da es pena!`,
+          `¡¡NO VALE!! ¡${rival} no divierte!`,
+          `¡¡¡Mientras que ${rival} la está es cagándo!!!`,
         ];
         secuencia.push(frasesCero[pickVaried('cero', frasesCero.length)]);
       }
@@ -4076,6 +4094,12 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         `Esta mano.. ${names[i]} rayó con ${pts} puntos!`,
         `¡QUÉ NIVEL! ${pts} puntos para ${names[i]}`,
         `¡Excelente!.. esta ronda la ganó ${names[i]} con ${pts} puntos`,
+        `¡¡QUE MANTEQUILLA!!.. ¡Esta mano la ganó ${names[i]} con ${pts} puntos!`,
+        `¡¡Muy fáaacil!!.. ¡Esos ${pts} puntos se los llevó ${names[i]}!`,
+        `¡¡Este bicho ${names[i]} no cree en nadie!! Agarró ${pts} puntos`,
+        `¡¡¡${names[i]} es un fenómeno!!!.. ¡Se llevó esta mano con ${pts} puntos!`,
+        `¡¡¡QUE ARRÉCHO ES ${names[i]}!!!.. ¡Sumó ${pts} puntos!`,
+        `¡¡¡SÍ ASÍ LLUEVE, QUE NO ESCAMPE!!!.. ${pts} puntos para ${names[i]}`,
       ];
       secuencia.push(frasesIndividual[pickVaried('individualMulti', frasesIndividual.length)]);
 
@@ -4163,6 +4187,9 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           "Y los demás no agarraron ni un consejo",
           "Y cero puntos para los malúcos de los demás",
           "¡¡Los demás se llevaron una paloma!!",
+          "¡¡VERGA!!.. ¡Los demás dan es pena!",
+          "¡¡NO VALE!! ¡Los demás no divierten!",
+          "¡¡¡Mientras que los demás la están es cagándo!!!",
         ];
         secuencia.push(frasesCeroMulti[pickVaried('ceroMulti', frasesCeroMulti.length)]);
       }
