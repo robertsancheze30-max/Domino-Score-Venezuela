@@ -2876,6 +2876,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           `¡¡NO VALE!! ¡${rival} no divierten!`,
           `¡¡¡Mientras que ${rival} la están es cagándo!!!`,
           `¡¡¡Y NI HABLAR DE ${rival}!!!.. ¡Son unos muertos!`,
+          `¡¡${rival} NÁ' GÜEVONÁ de malos!!!`,
         ] : [
           `Mientras que ${rival} se quedó en cero`,
           `Y ${rival} no agarró ni un consejo`,
@@ -2885,6 +2886,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
           `¡¡NO VALE!! ¡${rival} no divierte!`,
           `¡¡¡Mientras que ${rival} la está es cagándo!!!`,
           `¡¡¡Y NI HABLAR DE ${rival}!!!.. ¡Es un muerto!`,
+          `¡¡${rival} NÁ' GÜEVONÁ de malo!!!`,
         ];
         secuencia.push(frasesCero[pickNoRepeat('cero', frasesCero.length)]);
       }
@@ -4230,6 +4232,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           "¡¡NO VALE!! ¡Los demás no divierten!",
           "¡¡¡Mientras que los demás la están es cagándo!!!",
           "¡¡¡Y NI HABLAR DE los demás!!!.. ¡Son unos muertos!",
+          "¡¡Los demás NÁ' GÜEVONÁ de malos!!!",
         ];
         secuencia.push(frasesCeroMulti[pickNoRepeat('ceroMulti', frasesCeroMulti.length)]);
       }
