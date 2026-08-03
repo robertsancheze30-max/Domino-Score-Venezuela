@@ -269,6 +269,98 @@ const pickNoRepeat = (poolKey, total) => {
   return bag.pop();
 };
 
+// --- Sistema de "Calificar la app" -----------------------------------------
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.robertsanchez.dominoscorevenezuela&showAllReviews=true";
+const FEEDBACK_EMAIL = "sanchezmachucarobert97@gmail.com";
+
+// Se llama cada vez que termina una partida. Devuelve true si corresponde
+// mostrar el modal de calificación en ese momento.
+function recordMatchAndMaybePrompt() {
+  try {
+    const status = localStorage.getItem("domino-review-status") || "pending";
+    if (status === "done") return false;
+    const matches = parseInt(localStorage.getItem("domino-review-matches") || "0", 10) + 1;
+    localStorage.setItem("domino-review-matches", String(matches));
+    if (status === "later") {
+      const nextAsk = parseInt(localStorage.getItem("domino-review-nextAsk") || "0", 10);
+      return matches >= nextAsk;
+    }
+    return matches >= 3;
+  } catch (e) { return false; }
+}
+
+// El usuario cerró el modal sin calificar: preguntar de nuevo más adelante.
+function dismissReviewPrompt() {
+  try {
+    const matches = parseInt(localStorage.getItem("domino-review-matches") || "0", 10);
+    localStorage.setItem("domino-review-status", "later");
+    localStorage.setItem("domino-review-nextAsk", String(matches + 5));
+  } catch (e) {}
+}
+
+// El usuario ya calificó o mandó feedback: no volver a preguntar nunca más.
+function markReviewDone() {
+  try { localStorage.setItem("domino-review-status", "done"); } catch (e) {}
+}
+
+function ReviewPromptModal({ onClose }) {
+  const [stars, setStars] = useState(0);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedbackText, setFeedbackText] = useState("");
+
+  const handleStar = (n) => {
+    setStars(n);
+    if (n >= 4) {
+      markReviewDone();
+      window.open(PLAY_STORE_URL, "_blank");
+      onClose();
+    } else {
+      setShowFeedback(true);
+    }
+  };
+
+  const sendFeedback = () => {
+    markReviewDone();
+    const subject = encodeURIComponent("Feedback Dominó Score Venezuela");
+    const body = encodeURIComponent(`Calificación: ${stars} estrella(s)\n\nComentario:\n${feedbackText}`);
+    window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+    onClose();
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "#000000cc", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div style={{ background: "#111", borderRadius: 16, padding: 24, maxWidth: 340, width: "100%", border: "1px solid #333" }}>
+        {!showFeedback ? (
+          <>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "#fff", textAlign: "center", marginBottom: 8 }}>¿Qué tal la app?</div>
+            <div style={{ fontSize: 14, color: "#aaa", textAlign: "center", marginBottom: 16 }}>Tu opinión nos ayuda a mejorar</div>
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 20 }}>
+              {[1, 2, 3, 4, 5].map(n => (
+                <button key={n} onClick={() => handleStar(n)} style={{ fontSize: 32, background: "none", border: "none", cursor: "pointer", padding: 0, lineHeight: 1 }}>
+                  {n <= stars ? "⭐️" : "☆"}
+                </button>
+              ))}
+            </div>
+            <button onClick={() => { dismissReviewPrompt(); onClose(); }} style={{ width: "100%", padding: 10, background: "none", border: "none", color: "#666", fontSize: 14, cursor: "pointer" }}>Ahora no</button>
+          </>
+        ) : (
+          <>
+            <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", textAlign: "center", marginBottom: 8 }}>Cuéntanos qué mejorar</div>
+            <div style={{ fontSize: 13, color: "#aaa", textAlign: "center", marginBottom: 12 }}>Tu opinión es privada y directa para nosotros</div>
+            <textarea
+              value={feedbackText}
+              onChange={e => setFeedbackText(e.target.value)}
+              placeholder="Tu opinión o sugerencia..."
+              style={{ width: "100%", minHeight: 80, borderRadius: 10, padding: 10, background: "#050505", color: "#fff", border: "1px solid #333", boxSizing: "border-box", marginBottom: 12, fontFamily: "inherit", fontSize: 14 }}
+            />
+            <button onClick={sendFeedback} style={{ width: "100%", padding: 12, borderRadius: 10, background: "#a855f7", color: "#fff", fontWeight: 700, border: "none", fontSize: 15, cursor: "pointer" }}>Enviar</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // Variantes para anunciar de quién es el turno, usadas en los 4 modos de juego.
 const fraseSale = (nombre) => {
   const f = [
@@ -2257,6 +2349,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
   const [matchHistory, setMatchHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem("losmalucos-matches") || "[]"); } catch(e) { return []; }
   });
+  const [showReviewPrompt, setShowReviewPrompt] = useState(false);
 
   // Estadísticas de un jugador/equipo a partir del historial: % de victorias y racha actual
   const getPlayerStats = (name) => {
@@ -2636,6 +2729,8 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const updated = [...matchHistory, newMatch];
       setMatchHistory(updated);
       try { localStorage.setItem("losmalucos-matches", JSON.stringify(updated)); } catch(e) {}
+
+      if (recordMatchAndMaybePrompt()) setShowReviewPrompt(true);
 
       // Memoria: en modo 2v2, si esta misma pareja de jugadores (en cualquiera de
       // los dos equipos) ya perdió 2 o más veces en total (no necesariamente
@@ -3797,6 +3892,10 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         />
       )}
 
+      {showReviewPrompt && (
+        <ReviewPromptModal onClose={() => setShowReviewPrompt(false)} />
+      )}
+
     </div>
   );
 }
@@ -3813,6 +3912,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
   const [matchHistory, setMatchHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem("losmalucos-matches-multi") || "[]"); } catch(e) { return []; }
   });
+  const [showReviewPrompt, setShowReviewPrompt] = useState(false);
 
   // Estadísticas de un jugador a partir del historial: % de victorias y racha actual
   const getPlayerStatsMulti = (name) => {
@@ -3989,6 +4089,8 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       const updated = [...matchHistory, newMatch];
       setMatchHistory(updated);
       try { localStorage.setItem("losmalucos-matches-multi", JSON.stringify(updated)); } catch(e) {}
+
+      if (recordMatchAndMaybePrompt()) setShowReviewPrompt(true);
       const excesoSobreMetaMulti = newScores[newWinner] - meta;
       const frasesGanar = [
         `Llegó el campeon! ${names[newWinner]} ganó la partida con ${newScores[newWinner]} puntos. Felicitaciones`,
@@ -4849,6 +4951,9 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
           onConfirm={() => setKeypadIdx(null)}
           onClose={() => setKeypadIdx(null)}
         />
+      )}
+      {showReviewPrompt && (
+        <ReviewPromptModal onClose={() => setShowReviewPrompt(false)} />
       )}
     </div>
   );
