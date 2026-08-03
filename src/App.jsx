@@ -863,15 +863,15 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
         .play-btn:active { transform: scale(0.97); }
         .meta-opt:active { transform: scale(0.95); }
         @keyframes neonPulse { 0%,100%{ box-shadow: 0 0 8px #FFD700, 0 0 16px #FFD70066, inset 0 0 12px #FFD70022 } 50%{ box-shadow: 0 0 16px #FFD700, 0 0 32px #FFD70099, inset 0 0 18px #FFD70044 } }
-        @keyframes neonPulseGreen { 0%,100%{ box-shadow: 0 0 8px #00B800, 0 0 16px #00B80066, inset 0 0 12px #00B80022 } 50%{ box-shadow: 0 0 16px #00B800, 0 0 32px #00B80099, inset 0 0 18px #00B80044 } }
+        @keyframes neonPulseGreen { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.4) } }
         @keyframes neonText { 0%,100%{ text-shadow: 0 0 8px #FFD700, 0 0 18px #FFD70099, 0 0 32px #FFD70055 } 50%{ text-shadow: 0 0 14px #FFD700, 0 0 28px #FFD700cc, 0 0 48px #FFD70088 } }
         @keyframes scanline { 0%{ background-position: 0 0 } 100%{ background-position: 0 40px } }
         @keyframes chipSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes chipFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes pulseGlowFrame { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.5) } }
         @keyframes framePulseShadow {
-          0%,100% { box-shadow: 0 0 14px var(--glow), 0 0 28px var(--glow), 0 0 46px var(--glow), inset 0 0 10px #ffffffcc, inset 0 0 22px var(--glow); }
-          50% { box-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow), 0 0 100px var(--glow), inset 0 0 18px #ffffffee, inset 0 0 38px var(--glow); }
+          0%,100% { filter: brightness(1); }
+          50% { filter: brightness(1.5); }
         }
         .frame-pulse { animation: framePulseShadow 2s ease-in-out infinite; }
         @keyframes shimmerFrame { 0%{ background-position: 250% 250% } 11.5%{ background-position: -50% -50% } 100%{ background-position: -50% -50% } }
@@ -1161,14 +1161,14 @@ function Setup1v1Screen({ onStart, onBack, isPro, colorTheme }) {
         input:focus { outline: 2px solid #ffffff; outline-offset: 2px; }
         .play-btn:active { transform: scale(0.97); }
         .meta-opt:active { transform: scale(0.95); }
-        @keyframes neonPulseGreen { 0%,100%{ box-shadow: 0 0 8px #00B800, 0 0 16px #00B80066, inset 0 0 12px #00B80022 } 50%{ box-shadow: 0 0 16px #00B800, 0 0 32px #00B80099, inset 0 0 18px #00B80044 } }
+        @keyframes neonPulseGreen { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.4) } }
         @keyframes neonText { 0%,100%{ text-shadow: 0 0 8px #FFD700, 0 0 18px #FFD70099, 0 0 32px #FFD70055 } 50%{ text-shadow: 0 0 14px #FFD700, 0 0 28px #FFD700cc, 0 0 48px #FFD70088 } }
         @keyframes chipSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes chipFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes pulseGlowFrame { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.5) } }
         @keyframes framePulseShadow {
-          0%,100% { box-shadow: 0 0 14px var(--glow), 0 0 28px var(--glow), 0 0 46px var(--glow), inset 0 0 10px #ffffffcc, inset 0 0 22px var(--glow); }
-          50% { box-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow), 0 0 100px var(--glow), inset 0 0 18px #ffffffee, inset 0 0 38px var(--glow); }
+          0%,100% { filter: brightness(1); }
+          50% { filter: brightness(1.5); }
         }
         .frame-pulse { animation: framePulseShadow 2s ease-in-out infinite; }
         @keyframes shimmerFrame { 0%{ background-position: 250% 250% } 16.7%{ background-position: -50% -50% } 100%{ background-position: -50% -50% } }
@@ -1423,14 +1423,14 @@ function Setup3pScreen({ onStart, onBack, isPro, colorTheme }) {
         input:focus { outline: 2px solid #ffffff; outline-offset: 2px; }
         .play-btn:active { transform: scale(0.97); }
         .meta-opt:active { transform: scale(0.95); }
-        @keyframes neonPulseGreen { 0%,100%{ box-shadow: 0 0 8px #00B800, 0 0 16px #00B80066, inset 0 0 12px #00B80022 } 50%{ box-shadow: 0 0 16px #00B800, 0 0 32px #00B80099, inset 0 0 18px #00B80044 } }
+        @keyframes neonPulseGreen { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.4) } }
         @keyframes neonText { 0%,100%{ text-shadow: 0 0 8px #FFD700, 0 0 18px #FFD70099, 0 0 32px #FFD70055 } 50%{ text-shadow: 0 0 14px #FFD700, 0 0 28px #FFD700cc, 0 0 48px #FFD70088 } }
         @keyframes chipSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes chipFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes pulseGlowFrame { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.5) } }
         @keyframes framePulseShadow {
-          0%,100% { box-shadow: 0 0 14px var(--glow), 0 0 28px var(--glow), 0 0 46px var(--glow), inset 0 0 10px #ffffffcc, inset 0 0 22px var(--glow); }
-          50% { box-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow), 0 0 100px var(--glow), inset 0 0 18px #ffffffee, inset 0 0 38px var(--glow); }
+          0%,100% { filter: brightness(1); }
+          50% { filter: brightness(1.5); }
         }
         .frame-pulse { animation: framePulseShadow 2s ease-in-out infinite; }
         @keyframes shimmerFrame { 0%{ background-position: 250% 250% } 13.6%{ background-position: -50% -50% } 100%{ background-position: -50% -50% } }
@@ -1666,14 +1666,14 @@ function Setup4pScreen({ onStart, onBack, isPro, colorTheme }) {
         input:focus { outline: 2px solid #ffffff; outline-offset: 2px; }
         .play-btn:active { transform: scale(0.97); }
         .meta-opt:active { transform: scale(0.95); }
-        @keyframes neonPulseGreen { 0%,100%{ box-shadow: 0 0 8px #00B800, 0 0 16px #00B80066, inset 0 0 12px #00B80022 } 50%{ box-shadow: 0 0 16px #00B800, 0 0 32px #00B80099, inset 0 0 18px #00B80044 } }
+        @keyframes neonPulseGreen { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.4) } }
         @keyframes neonText { 0%,100%{ text-shadow: 0 0 8px #FFD700, 0 0 18px #FFD70099, 0 0 32px #FFD70055 } 50%{ text-shadow: 0 0 14px #FFD700, 0 0 28px #FFD700cc, 0 0 48px #FFD70088 } }
         @keyframes chipSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes chipFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
         @keyframes pulseGlowFrame { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.5) } }
         @keyframes framePulseShadow {
-          0%,100% { box-shadow: 0 0 14px var(--glow), 0 0 28px var(--glow), 0 0 46px var(--glow), inset 0 0 10px #ffffffcc, inset 0 0 22px var(--glow); }
-          50% { box-shadow: 0 0 30px var(--glow), 0 0 60px var(--glow), 0 0 100px var(--glow), inset 0 0 18px #ffffffee, inset 0 0 38px var(--glow); }
+          0%,100% { filter: brightness(1); }
+          50% { filter: brightness(1.5); }
         }
         .frame-pulse { animation: framePulseShadow 2s ease-in-out infinite; }
         @keyframes shimmerFrame { 0%{ background-position: 250% 250% } 11.5%{ background-position: -50% -50% } 100%{ background-position: -50% -50% } }
@@ -3239,7 +3239,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         @keyframes confettiFall { 0%{transform:translate(0,-20px) rotate(0deg);opacity:1} 50%{transform:translate(var(--sway),55vh) rotate(400deg);opacity:1} 100%{transform:translate(0,110vh) rotate(760deg);opacity:0} }
         @keyframes confettiEmoji { 0%{transform:translateY(-30px) scale(0.6) rotate(-10deg);opacity:0} 15%{opacity:1;transform:translateY(10vh) scale(1.1) rotate(5deg)} 100%{transform:translateY(110vh) scale(1) rotate(15deg);opacity:0} }
         @keyframes starSpin { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.2)} 100%{transform:rotate(360deg) scale(1)} }
-        @keyframes casinoCardPulse { 0%,100%{ box-shadow: 0 0 18px currentColor, 0 0 32px transparent, inset 0 0 16px #00000099 } 50%{ box-shadow: 0 0 28px currentColor, 0 0 46px currentColor, inset 0 0 20px #00000099 } }
+        @keyframes casinoCardPulse { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.25) } }
         @keyframes casinoShimmer { 0%{ background-position: -150% 0 } 100%{ background-position: 250% 0 } }
         @keyframes casinoScan { 0%{ transform: translateY(-100%) } 100%{ transform: translateY(200%) } }
         @keyframes ledBlink { 0%,100%{ opacity:1 } 50%{ opacity:0.25 } }
@@ -3248,7 +3248,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
         @keyframes circuitPulse { 0%,100%{ opacity:0.15 } 50%{ opacity:0.4 } }
         @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
         @keyframes neonPulse { 0%,100%{ box-shadow: 0 0 8px #FFD700, 0 0 16px #FFD70066, inset 0 0 12px #FFD70022 } 50%{ box-shadow: 0 0 16px #FFD700, 0 0 32px #FFD70099, inset 0 0 18px #FFD70044 } }
-        @keyframes neonPulseGreen { 0%,100%{ box-shadow: 0 0 8px #00B800, 0 0 16px #00B80066, inset 0 0 12px #00B80022 } 50%{ box-shadow: 0 0 16px #00B800, 0 0 32px #00B80099, inset 0 0 18px #00B80044 } }
+        @keyframes neonPulseGreen { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.4) } }
         @keyframes neonText { 0%,100%{ text-shadow: 0 0 8px #FFD700, 0 0 18px #FFD70099, 0 0 32px #FFD70055 } 50%{ text-shadow: 0 0 14px #FFD700, 0 0 28px #FFD700cc, 0 0 48px #FFD70088 } }
         @keyframes chipSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
         @keyframes chipFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
@@ -4434,7 +4434,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
         @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
         @keyframes confettiFall { 0%{transform:translate(0,-20px) rotate(0deg);opacity:1} 50%{transform:translate(var(--sway),55vh) rotate(400deg);opacity:1} 100%{transform:translate(0,110vh) rotate(760deg);opacity:0} }
         @keyframes confettiEmoji { 0%{transform:translateY(-30px) scale(0.6) rotate(-10deg);opacity:0} 15%{opacity:1;transform:translateY(10vh) scale(1.1) rotate(5deg)} 100%{transform:translateY(110vh) scale(1) rotate(15deg);opacity:0} }
-        @keyframes casinoCardPulse { 0%,100%{ box-shadow: 0 0 18px currentColor, 0 0 32px transparent, inset 0 0 16px #00000099 } 50%{ box-shadow: 0 0 28px currentColor, 0 0 46px currentColor, inset 0 0 20px #00000099 } }
+        @keyframes casinoCardPulse { 0%,100%{ filter: brightness(1) } 50%{ filter: brightness(1.25) } }
         @keyframes casinoShimmer { 0%{ background-position: -150% 0 } 100%{ background-position: 250% 0 } }
         @keyframes casinoScan { 0%{ transform: translateY(-100%) } 100%{ transform: translateY(200%) } }
         @keyframes ledBlink { 0%,100%{ opacity:1 } 50%{ opacity:0.25 } }
