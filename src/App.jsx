@@ -114,7 +114,13 @@ function ttsSafeText(text) {
 }
 
 async function fetchAndDecodeTTS(rawText) {
-  const text = ttsSafeText(rawText);
+  let text = ttsSafeText(rawText);
+  // Asegura que el texto termine en un signo de puntuación (. ! ?), para que
+  // el modelo de voz tenga una señal clara de fin de frase y no corte la
+  // última sílaba/letra (ej: "Carolina" sonando como "Carolin").
+  if (text && !/[.!?…]\s*$/.test(text)) {
+    text = text + ".";
+  }
   if (_audioCache.has(text)) return _audioCache.get(text);
   const res = await fetch("/api/tts", {
     method: "POST",
