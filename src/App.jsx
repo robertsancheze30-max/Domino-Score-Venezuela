@@ -199,6 +199,26 @@ const loadGame = () => {
   } catch (e) { return null; }
 };
 
+const ShoeRain = () => {
+  const shoes = Array.from({ length: 30 }, (_, i) => ({
+    id: i, x: Math.random() * 100,
+    delay: Math.random() * 1.5, dur: 2 + Math.random() * 2,
+    size: 26 + Math.random() * 22,
+  }));
+  return (
+    <>
+      {shoes.map(s => (
+        <div key={"shoe" + s.id} style={{
+          position: "fixed", left: s.x + "%", top: -30,
+          fontSize: s.size, lineHeight: 1,
+          animation: "confettiEmoji " + s.dur + "s " + s.delay + "s ease-in forwards",
+          zIndex: 9999, pointerEvents: "none",
+        }}>👟</div>
+      ))}
+    </>
+  );
+};
+
 const Confetti = () => {
   const pieces = Array.from({ length: 70 }, (_, i) => ({
     id: i, x: Math.random() * 100,
@@ -2352,6 +2372,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
   const [winner, setWinner] = useState(initialState?.winner ?? null);
   const [loserScore, setLoserScore] = useState(initialState?.loserScore ?? null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isZapatoWin, setIsZapatoWin] = useState(false);
   const [matchHistory, setMatchHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem("losmalucos-matches") || "[]"); } catch(e) { return []; }
   });
@@ -2698,6 +2719,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       const loser = newWinner === 0 ? 1 : 0;
       setLoserScore(newScores[loser]);
       setShowConfetti(true);
+      setIsZapatoWin(newScores[loser] === 0);
 
       // Remontada: revisa el historial ronda por ronda para ver si el ganador
       // llegó a estar perdiendo por mucho en algún momento de la partida
@@ -3083,7 +3105,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
 
   const handleReset = () => {
     try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-    setLoserScore(null); setShowConfetti(false);
+    setLoserScore(null); setShowConfetti(false); setIsZapatoWin(false);
     const frasesNuevaPartida = [
       "¡¡¡Que empiece la próxima partida muchachos!!!",
       "¡¡A jugar de nuevo cuerdas de malos!!",
@@ -3212,6 +3234,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       setWinner(null);
       setLoserScore(null);
       setShowConfetti(false);
+      setIsZapatoWin(false);
       onRevanche();
     }, 200);
   };
@@ -3267,6 +3290,7 @@ function GameScreen({ team1, team2, meta, initialState, onReset, onRevanche, rou
       }} />
 
       {showConfetti && <Confetti />}
+      {showConfetti && isZapatoWin && <ShoeRain />}
 
       {/* ── HEADER ─────────────────────────────── */}
       {themeKey === "cartoon" ? (
@@ -3914,6 +3938,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
   const [history, setHistory] = useState([]);
   const [winner, setWinner] = useState(null);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [isZapatoWin, setIsZapatoWin] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [matchHistory, setMatchHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem("losmalucos-matches-multi") || "[]"); } catch(e) { return []; }
@@ -4074,6 +4099,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
 
       // Zapato: jugadores que quedaron en 0
       const zapateros = names.filter((_, idx) => idx !== newWinner && newScores[idx] === 0);
+      setIsZapatoWin(zapateros.length > 0);
 
       // "Detrás de la ambulancia": solo modo 4 jugadores, y solo si NO hubo zapato en esta partida.
       // Si alguien se llevó el zapato, la ambulancia no se anuncia para nadie.
@@ -4455,6 +4481,7 @@ function GameMultiScreen({ playerNames, meta, onReset, onRevanche, isRevancha = 
       }} />
 
       {showConfetti && <Confetti />}
+      {showConfetti && isZapatoWin && <ShoeRain />}
 
       {/* Header */}
       {themeKey === "cartoon" ? (
