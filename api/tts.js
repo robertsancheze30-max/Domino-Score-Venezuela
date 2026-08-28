@@ -32,15 +32,14 @@ export default async function handler(req, res) {
           "xi-api-key": apiKey,
         },
         body: JSON.stringify({
-          text: text.slice(0, 2500), // límite de seguridad (subido de 800 a 2500 para que no corte frases combinadas largas)
-          model_id: "eleven_turbo_v2_5",
-          language_code: "es", // fuerza español (evita que "adivine" inglés)
+          text: text.slice(0, 2500),
+          model_id: "eleven_multilingual_v2", // mejor acento en español que turbo_v2_5
+          language_code: "es",
           voice_settings: {
-            stability: 0.35,       // un poco más variable = entonación más natural, menos "plano"
-            similarity_boost: 0.85,
-            style: 0.45,           // un poco más de expresividad, sin pasarse
+            stability: 0.4,
+            similarity_boost: 0.8,
+            style: 0.45,
             use_speaker_boost: true,
-            // quitamos "speed" (podía generar cortes/artefactos raros en algunas frases)
           },
         }),
       }
@@ -61,3 +60,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
+
