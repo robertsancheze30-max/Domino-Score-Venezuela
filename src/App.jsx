@@ -771,7 +771,7 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
   const [p3, setP3] = useState("");
   const [p4, setP4] = useState("");
   const [meta, setMeta] = useState(50);
-
+  const [playMode, setPlayMode] = useState("local")
   const playKey = () => {
     playRealisticKeyClick();
   };
@@ -1020,8 +1020,9 @@ function SetupScreen({ onStart, onBack, isPro, colorTheme }) {
             display:"block", fontFamily:"'Orbitron', sans-serif",
             fontSize:12, letterSpacing:4, color:"#ffffff", marginBottom:12,
             textAlign:"center", fontWeight:700,
-          }}>META DE PUNTOS</label>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
+          }}>LOgCvAL/EN LÍNEA</label><div style={{ display:"flex", gap:10, justifyContent:"center", marginBottom:20 }}><button onClick={()=>setPlayMode("local")} style={{ flex:1, padding:10, borderRadius:10, border: playMode==="local"?"2px solid #FFD700":"1px solid #555", background: playMode==="local"?"#333":"#111", color:"#fff" }}>📍 LOCAL</button><button onClick={()=>setPlayMode("online")} style={{ flex:1, b:10, borderRadius:10, border: playMode==="online"?"2px solid #FFD700":"1px solid #555", background: playMode==="online"?"#333":"#111", color:"#fff" }}>🌐 EN LÍNEA</button></div><label style={{display:"none"}}>META DE PUNTOS
+</label>
+          <div style={{ display:f"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
             {[50, 75, 100].map((opt, idx) => (
               <ChamferFrame key={opt} color={metaColors[idx]} size={12} rounded delay={4}>
                 <button className="meta-opt" onClick={() => { setMeta(opt); playMetaSelect(); }} style={{
@@ -1298,7 +1299,8 @@ function Setup1v1Screen({ onStart, onBack, isPro, colorTheme }) {
             display:"block", fontFamily:"'Orbitron', sans-serif",
             fontSize:12, letterSpacing:4, color:"#ffffff", marginBottom:12,
             textAlign:"center", fontWeight:700,
-          }}>META DE PUNTOS</label>
+          }}>LOCAL/EN LÍNEA</label><div style={{ display:"flex", gap:10, justifyContent:"center", marginBottom:20 }}><button onClick={()=>setPlayMode("local")} style={{ flex:1, padding:10, borderRadius:10, border: playMode==="local"?"2px solid #FFD700":"1px solid #555", background: playMode==="local"?"#333":"#111", color:"#fff" }}>📍 LOCAL</button><button onClick={()=>setPlayMode("online")} style={{ flex:1, padding:10, borderRadius:10, border: playMode==="online"?"2px solid #FFD700":"1px solid #555", background: playMode==="online"?"#333":"#111", color:"#fff" }}>🌐 EN LÍNEA</button></div><label style={{display:"none"}}>META DE PUNTOS
+</label>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
             {[50, 75, 100].map((opt, idx) => (
               <ChamferFrame key={opt} color={metaColors[idx]} size={12} rounded delay={2}>
@@ -1537,7 +1539,8 @@ function Setup3pScreen({ onStart, onBack, isPro, colorTheme }) {
             display:"block", fontFamily:"'Orbitron', sans-serif",
             fontSize:12, letterSpacing:4, color:"#ffffff", marginBottom:12,
             textAlign:"center", fontWeight:700,
-          }}>META DE PUNTOS</label>
+          }}>LOCAL/EN LÍNEA</label><div style={{ display:"flex", gap:10, justifyContent:"center", marginBottom:20 }}><button onClick={()=>setPlayMode("local")} style={{ flex:1, padding:10, borderRadius:10, border: playMode==="local"?"2px solid #FFD700":"1px solid #555", background: playMode==="local"?"#333":"#111", color:"#fff" }}>📍 LOCAL</button><button onClick={()=>setPlayMode("online")} style={{ flex:1, padding:10, borderRadius:10, border: playMode==="online"?"2px solid #FFD700":"1px solid #555", background: playMode==="online"?"#333":"#111", color:"#fff" }}>🌐 EN LÍNEA</button></div><label style={{display:"none"}}>META DE PUNTOS
+</label>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
             {[50, 75, 100].map((opt, idx) => (
               <ChamferFrame key={opt} color={metaColors[idx]} size={12} rounded delay={3}>
@@ -1787,7 +1790,8 @@ function Setup4pScreen({ onStart, onBack, isPro, colorTheme }) {
             display:"block", fontFamily:"'Orbitron', sans-serif",
             fontSize:12, letterSpacing:4, color:"#ffffff", marginBottom:12,
             textAlign:"center", fontWeight:700,
-          }}>META DE PUNTOS</label>
+          }}>LOCAL/EN LÍNEA</label><div style={{ display:"flex", gap:10, justifyContent:"center", marginBottom:20 }}><button onClick={()=>setPlayMode("local")} style={{ flex:1, padding:10, borderRadius:10, border: playMode==="local"?"2px solid #FFD700":"1px solid #555", background: playMode==="local"?"#333":"#111", color:"#fff" }}>📍 LOCAL</button><button onClick={()=>setPlayMode("online")} style={{ flex:1, padding:10, borderRadius:10, border: playMode==="online"?"2px solid #FFD700":"1px solid #555", background: playMode==="online"?"#333":"#111", color:"#fff" }}>🌐 EN LÍNEA</button></div><label style={{display:"none"}}>META DE PUNTOS
+</label>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12 }}>
             {[50, 75, 100].map((opt, idx) => (
               <ChamferFrame key={opt} color={metaColors[idx]} size={12} rounded delay={4}>
@@ -2247,7 +2251,8 @@ function CartoonSetupScreen({ title, fields, meta, setMeta, onJugar, onBack, pla
         ))}
       </div>
 
-      <div style={{ marginBottom: 10, fontSize: 13, fontWeight: 900, color: SOFT.navy }}>META DE PUNTOS</div>
+      <div style={{ marginBottom: 10, fontSize: 13, fontWeight: 900, color: SOFT.navy }}>LOCAL/EN LÍNEA</label><div style={{ display:"flex", gap:10, justifyContent:"center", marginBottom:20 }}><button onClick={()=>setPlayMode("local")} style={{ flex:1, padding:10, borderRadius:10, border: playMode==="local"?"2px solid #FFD700":"1px solid #555", background: playMode==="local"?"#333":"#111", color:"#fff" }}>📍 LOCAL</button><button onClick={()=>setPlayMode("online")} style={{ flex:1, padding:10, borderRadius:10, border: playMode==="online"?"2px solid #FFD700":"1px solid #555", background: playMode==="online"?"#333":"#111", color:"#fff" }}>🌐 EN LÍNEA</button></div><label style={{display:"none"}}>META DE PUNTOS
+</div>
       <div style={{ display: "flex", gap: 10, marginBottom: 30 }}>
         {[50, 75, 100].map(v => (
           <button key={v} onClick={() => { setMeta(v); playMetaSelect(); }} style={{
